@@ -8,7 +8,6 @@ import {
   X, 
   ArrowRight, 
   ChevronDown, 
-  Sparkles,
   PieChart,
   ShieldCheck,
   Zap,
@@ -80,14 +79,9 @@ export function Navbar() {
               <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-300 rounded-full animate-ping opacity-75" />
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors">
-                  FinPulse
-                </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <Sparkles className="w-2.5 h-2.5" /> AI v2.4
-                </span>
-              </div>
+              <span className="text-xl font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors">
+                ExpenseFlow
+              </span>
             </div>
           </Link>
 
