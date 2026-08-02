@@ -34,7 +34,7 @@ const pricingPlans: PricingPlan[] = [
       "Responsive dashboard",
     ],
     buttonText: "Get Started Free",
-    buttonHref: "/register",
+    buttonHref: "/signup",
     disabled: false,
   },
   {

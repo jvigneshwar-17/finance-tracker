@@ -40,7 +40,7 @@ export function CTA() {
             {/* Action CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link
-                href="/register"
+                href="/signup"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 hover:brightness-110 shadow-xl shadow-emerald-500/25 active:scale-[0.98] transition-all glow-emerald"
               >
                 <span>Get Started Free</span>

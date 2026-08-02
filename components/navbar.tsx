@@ -156,7 +156,7 @@ export function Navbar() {
             </Link>
 
             <Link
-              href="/register"
+              href="/signup"
               className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 hover:brightness-110 active:scale-95 transition-all duration-200 shadow-lg shadow-emerald-500/25 glow-emerald"
             >
               <span>Get Started</span>
@@ -222,7 +222,7 @@ export function Navbar() {
               Log In
             </Link>
             <Link
-              href="/register"
+              href="/signup"
               onClick={() => setIsMobileMenuOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-transform"
             >
