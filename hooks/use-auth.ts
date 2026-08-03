@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface User {
   id: string;
@@ -32,6 +32,35 @@ interface UseAuthReturn {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    let cancelled = false;
+
+    async function fetchUser() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (cancelled) return;
+        if (response.ok) {
+          const data = await response.json();
+          if (!cancelled) setUser(data.user);
+        }
+      } catch {
+        // User not authenticated
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    fetchUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const refresh = useCallback(async () => {
     try {
@@ -44,14 +73,8 @@ export function useAuth(): UseAuthReturn {
       }
     } catch {
       setUser(null);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
 
   const login = async (
     email: string,

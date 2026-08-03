@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { TrendingUp, Mail, Heart } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 // Custom SVG Icons for Brand Logos
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
