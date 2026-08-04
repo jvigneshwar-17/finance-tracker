@@ -11,6 +11,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { BarChart3 } from "lucide-react";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { useTransactions } from "@/hooks/use-transactions";
 import type { IncomeExpenseBarPoint } from "@/hooks/use-transactions";
 
@@ -85,10 +87,12 @@ export function IncomeExpenseBarChart({ data: propData }: { data?: IncomeExpense
             <div className="w-full h-40 bg-slate-800/40 animate-pulse rounded-xl" />
           </div>
         ) : !hasData ? (
-          <div className="w-full h-full flex flex-col items-center justify-center text-center">
-            <p className="text-xs text-slate-400 font-medium mb-1">No monthly activity data</p>
-            <p className="text-[11px] text-slate-500">Record income and expenses to view comparisons</p>
-          </div>
+          <EmptyState
+            icon={BarChart3}
+            title="No Monthly Activity Data"
+            description="Record income and expenses to view comparisons"
+            compact
+          />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={4}>

@@ -51,6 +51,18 @@ export interface IncomeExpenseBarPoint {
   expenses: number;
 }
 
+export interface SpendingInsightsData {
+  monthOverMonthPercentChange: number | null;
+  monthOverMonthDifference: number;
+  monthOverMonthDirection: "increase" | "decrease" | "same" | "no_prev_data";
+  largestCategory: { name: string; amount: number } | null;
+  monthlySavings: number;
+  highestExpenseTx: { title: string; amount: number } | null;
+  totalMonthTransactions: number;
+  avgDailySpending: number;
+  activeSpendingDays: number;
+}
+
 interface TransactionsContextValue {
   // State
   recent: Transaction[];
@@ -60,6 +72,7 @@ interface TransactionsContextValue {
   spendingTrend: SpendingTrendPoint[];
   categoryBreakdown: CategoryPiePoint[];
   incomeVsExpense: IncomeExpenseBarPoint[];
+  insights: SpendingInsightsData;
   // Mutators
   refreshRecent: () => void;
   refreshStats: () => void;
@@ -203,6 +216,93 @@ function calcIncomeExpense(transactions: Transaction[]): IncomeExpenseBarPoint[]
   }));
 }
 
+function calcSpendingInsights(
+  transactions: Transaction[],
+  monthlySavings: number
+): SpendingInsightsData {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const prevYear = prevMonthDate.getFullYear();
+  const prevMonth = prevMonthDate.getMonth();
+
+  let currExpenseTotal = 0;
+  let prevExpenseTotal = 0;
+  let totalMonthTransactions = 0;
+  let highestExpenseTx: { title: string; amount: number } | null = null;
+  const categoryMap = new Map<string, number>();
+  const activeDaysSet = new Set<string>();
+
+  for (const tx of transactions) {
+    const d = new Date(tx.date);
+    const y = d.getFullYear();
+    const m = d.getMonth();
+    const amount = Number(tx.amount) || 0;
+
+    const isCurrentMonth = y === currentYear && m === currentMonth;
+    const isPrevMonth = y === prevYear && m === prevMonth;
+
+    if (isCurrentMonth) {
+      totalMonthTransactions++;
+      if (tx.type === "expense") {
+        currExpenseTotal += amount;
+        categoryMap.set(tx.category, (categoryMap.get(tx.category) || 0) + amount);
+
+        const dayKey = `${y}-${m}-${d.getDate()}`;
+        activeDaysSet.add(dayKey);
+
+        if (!highestExpenseTx || amount > highestExpenseTx.amount) {
+          highestExpenseTx = { title: tx.title, amount };
+        }
+      }
+    } else if (isPrevMonth) {
+      if (tx.type === "expense") {
+        prevExpenseTotal += amount;
+      }
+    }
+  }
+
+  let monthOverMonthPercentChange: number | null = null;
+  let monthOverMonthDifference = 0;
+  let monthOverMonthDirection: "increase" | "decrease" | "same" | "no_prev_data" = "no_prev_data";
+
+  if (prevExpenseTotal > 0) {
+    monthOverMonthDifference = currExpenseTotal - prevExpenseTotal;
+    const diffPercent = (monthOverMonthDifference / prevExpenseTotal) * 100;
+    monthOverMonthPercentChange = Math.abs(diffPercent);
+
+    if (diffPercent > 0) monthOverMonthDirection = "increase";
+    else if (diffPercent < 0) monthOverMonthDirection = "decrease";
+    else monthOverMonthDirection = "same";
+  }
+
+  let largestCategory: { name: string; amount: number } | null = null;
+  let maxCatAmount = 0;
+  categoryMap.forEach((amount, name) => {
+    if (amount > maxCatAmount) {
+      maxCatAmount = amount;
+      largestCategory = { name, amount };
+    }
+  });
+
+  const activeSpendingDays = activeDaysSet.size;
+  const avgDailySpending = activeSpendingDays > 0 ? Math.round(currExpenseTotal / activeSpendingDays) : 0;
+
+  return {
+    monthOverMonthPercentChange,
+    monthOverMonthDifference: Math.abs(monthOverMonthDifference),
+    monthOverMonthDirection,
+    largestCategory,
+    monthlySavings,
+    highestExpenseTx,
+    totalMonthTransactions,
+    avgDailySpending,
+    activeSpendingDays,
+  };
+}
+
 // ─── Provider ────────────────────────────────────────────────────────
 
 export function TransactionsProvider({ children }: { children: React.ReactNode }) {
@@ -219,6 +319,17 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
   const [spendingTrend, setSpendingTrend] = useState<SpendingTrendPoint[]>([]);
   const [categoryBreakdown, setCategoryBreakdown] = useState<CategoryPiePoint[]>([]);
   const [incomeVsExpense, setIncomeVsExpense] = useState<IncomeExpenseBarPoint[]>([]);
+  const [insights, setInsights] = useState<SpendingInsightsData>({
+    monthOverMonthPercentChange: null,
+    monthOverMonthDifference: 0,
+    monthOverMonthDirection: "no_prev_data",
+    largestCategory: null,
+    monthlySavings: 0,
+    highestExpenseTx: null,
+    totalMonthTransactions: 0,
+    avgDailySpending: 0,
+    activeSpendingDays: 0,
+  });
   const [statsLoading, setStatsLoading] = useState(true);
 
   const recentVersion = useRef(0);
@@ -266,10 +377,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
           const data = await res.json();
           if (version === statsVersion.current) {
             const txs: Transaction[] = data.transactions || [];
-            setStats(calcStats(txs));
+            const calculatedStats = calcStats(txs);
+            setStats(calculatedStats);
             setSpendingTrend(calcSpendingTrend(txs));
             setCategoryBreakdown(calcCategoryPie(txs));
             setIncomeVsExpense(calcIncomeExpense(txs));
+            setInsights(calcSpendingInsights(txs, calculatedStats.monthlySavings));
           }
         }
       } catch {
@@ -302,6 +415,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         spendingTrend,
         categoryBreakdown,
         incomeVsExpense,
+        insights,
         refreshRecent,
         refreshStats,
         refreshAll,

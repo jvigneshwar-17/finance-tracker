@@ -8,7 +8,9 @@ import {
   ArrowRight,
   ArrowDownLeft,
   ArrowUpRight,
+  ArrowLeftRight,
 } from "lucide-react";
+import { EmptyState } from "@/components/dashboard/empty-state";
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -80,20 +82,14 @@ function TransactionSkeleton() {
 
 function TransactionsEmpty({ onAdd }: { onAdd?: () => void }) {
   return (
-    <div className="py-10 text-center">
-      <p className="text-sm text-slate-400 mb-1">No transactions yet</p>
-      <p className="text-xs text-slate-500">
-        Add your first transaction to see it here.
-      </p>
-      {onAdd && (
-        <button
-          onClick={onAdd}
-          className="mt-3 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors focus:outline-none focus:underline"
-        >
-          + Add Transaction
-        </button>
-      )}
-    </div>
+    <EmptyState
+      icon={ArrowLeftRight}
+      title="No Transactions Yet"
+      description="Add your first transaction to get started."
+      ctaLabel="+ Add Transaction"
+      onCtaClick={onAdd}
+      compact
+    />
   );
 }
 

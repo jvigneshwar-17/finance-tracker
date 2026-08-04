@@ -13,6 +13,8 @@ interface EmptyStateProps {
   ctaLabel?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
+  compact?: boolean;
+  className?: string;
 }
 
 export function EmptyState({
@@ -22,13 +24,57 @@ export function EmptyState({
   ctaLabel,
   ctaHref,
   onCtaClick,
+  compact = false,
+  className,
 }: EmptyStateProps) {
+  if (compact) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className={cn(
+          "w-full h-full flex flex-col items-center justify-center text-center p-4",
+          className
+        )}
+      >
+        <div className="relative mb-3">
+          <div className="w-10 h-10 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center">
+            <Icon className="w-5 h-5 text-slate-400" />
+          </div>
+        </div>
+        <p className="text-xs font-semibold text-slate-300 mb-0.5">{title}</p>
+        <p className="text-[11px] text-slate-500 max-w-[220px] leading-tight">
+          {description}
+        </p>
+        {ctaLabel && (ctaHref || onCtaClick) && (
+          <div className="mt-3">
+            {ctaHref ? (
+              <Link href={ctaHref}>
+                <Button size="sm" variant="outline" className="h-7 text-xs px-3">
+                  {ctaLabel}
+                </Button>
+              </Link>
+            ) : (
+              <Button size="sm" variant="outline" className="h-7 text-xs px-3" onClick={onCtaClick}>
+                {ctaLabel}
+              </Button>
+            )}
+          </div>
+        )}
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="flex flex-col items-center justify-center text-center py-16 sm:py-24 px-4"
+      className={cn(
+        "flex flex-col items-center justify-center text-center py-16 sm:py-24 px-4",
+        className
+      )}
     >
       {/* Decorative icon area */}
       <div className="relative mb-6">

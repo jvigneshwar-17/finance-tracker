@@ -10,6 +10,7 @@ import {
   Target,
   Download,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // ─── Types ────────────────────────────────────────────────────────────
 
@@ -77,6 +78,8 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({ onAddIncome, onAddExpense }: QuickActionsProps) {
+  const router = useRouter();
+
   function handleAction(action: QuickAction) {
     switch (action.actionKey) {
       case "addIncome":
@@ -86,7 +89,7 @@ export function QuickActions({ onAddIncome, onAddExpense }: QuickActionsProps) {
         onAddExpense?.();
         break;
       case "createBudget":
-        toast.info("🚧 Budget Management is coming soon and will be available in the next sprint.");
+        router.push("/dashboard/budgets");
         break;
       case "setGoal":
         toast.info("🎯 Savings Goals are coming soon.");

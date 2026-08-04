@@ -12,8 +12,25 @@ function createPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter });
 }
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
+function getPrismaClient(): PrismaClient {
+  if (globalForPrisma.prisma && "budget" in globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
+  }
+  const client = createPrismaClient();
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+  return client;
 }
+
+// Proxy wrapper ensures dynamic model resolution and prevents stale client references
+export const db = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient() as unknown as Record<string | symbol, unknown>;
+    const value = client[prop as string];
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  },
+});

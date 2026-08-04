@@ -8,6 +8,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { PieChart as PieIcon } from "lucide-react";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { useTransactions } from "@/hooks/use-transactions";
 import type { CategoryPiePoint } from "@/hooks/use-transactions";
 
@@ -64,10 +66,12 @@ export function CategoryPieChart({ data: propData }: { data?: CategoryPiePoint[]
               <div className="w-32 h-32 rounded-full bg-slate-800/40 animate-pulse" />
             </div>
           ) : !hasData ? (
-            <div className="w-full h-full flex flex-col items-center justify-center text-center">
-              <p className="text-xs text-slate-400 font-medium mb-1">No category data</p>
-              <p className="text-[11px] text-slate-500">Record expenses with categories to see breakdown</p>
-            </div>
+            <EmptyState
+              icon={PieIcon}
+              title="No Category Data"
+              description="Record expenses with categories to see breakdown"
+              compact
+            />
           ) : (
             <>
               <ResponsiveContainer width="100%" height="100%">

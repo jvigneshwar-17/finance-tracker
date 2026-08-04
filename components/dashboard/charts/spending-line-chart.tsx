@@ -10,6 +10,8 @@ import {
   Area,
   AreaChart,
 } from "recharts";
+import { LineChart as LineChartIcon } from "lucide-react";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { useTransactions } from "@/hooks/use-transactions";
 import type { SpendingTrendPoint } from "@/hooks/use-transactions";
 
@@ -63,10 +65,12 @@ export function SpendingLineChart({ data: propData }: { data?: SpendingTrendPoin
             <div className="w-full h-40 bg-slate-800/40 animate-pulse rounded-xl" />
           </div>
         ) : !hasData ? (
-          <div className="w-full h-full flex flex-col items-center justify-center text-center">
-            <p className="text-xs text-slate-400 font-medium mb-1">No spending data</p>
-            <p className="text-[11px] text-slate-500">Record expenses to see monthly trends</p>
-          </div>
+          <EmptyState
+            icon={LineChartIcon}
+            title="No Spending Data"
+            description="Record expenses to see monthly trends"
+            compact
+          />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
