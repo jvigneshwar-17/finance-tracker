@@ -3,130 +3,114 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getCategoryConfig } from "@/lib/categories";
 import {
-  ShoppingCart,
-  Utensils,
-  Car,
-  Zap,
-  Heart,
-  Film,
-  Fuel,
-  Briefcase,
   ArrowRight,
   ArrowDownLeft,
   ArrowUpRight,
 } from "lucide-react";
 
-interface Transaction {
+// ─── Types ──────────────────────────────────────────────────────────
+
+export interface TransactionData {
   id: string;
   title: string;
-  category: string;
-  emoji: string;
   amount: number;
-  type: "income" | "expense";
+  type: string;
+  category: string;
+  note: string | null;
   date: string;
-  icon: React.ElementType;
-  iconColor: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const mockTransactions: Transaction[] = [
-  {
-    id: "t1",
-    title: "Vegetables from Sabzi Mandi",
-    category: "Groceries",
-    emoji: "🥦",
-    amount: 320,
-    type: "expense",
-    date: "Today, 6:15 PM",
-    icon: ShoppingCart,
-    iconColor: "bg-emerald-500/10 text-emerald-400",
-  },
-  {
-    id: "t2",
-    title: "Salary - TCS Ltd",
-    category: "Income",
-    emoji: "💰",
-    amount: 45000,
-    type: "income",
-    date: "Today, 9:00 AM",
-    icon: Briefcase,
-    iconColor: "bg-emerald-500/10 text-emerald-400",
-  },
-  {
-    id: "t3",
-    title: "Swiggy - Biryani House",
-    category: "Food & Dining",
-    emoji: "🍕",
-    amount: 450,
-    type: "expense",
-    date: "Yesterday, 1:30 PM",
-    icon: Utensils,
-    iconColor: "bg-teal-500/10 text-teal-400",
-  },
-  {
-    id: "t4",
-    title: "Uber Ride to Office",
-    category: "Transport",
-    emoji: "🚕",
-    amount: 185,
-    type: "expense",
-    date: "Yesterday, 8:45 AM",
-    icon: Car,
-    iconColor: "bg-cyan-500/10 text-cyan-400",
-  },
-  {
-    id: "t5",
-    title: "HP Petrol Pump",
-    category: "Fuel",
-    emoji: "⛽",
-    amount: 2500,
-    type: "expense",
-    date: "2 Aug, 6:00 PM",
-    icon: Fuel,
-    iconColor: "bg-orange-500/10 text-orange-400",
-  },
-  {
-    id: "t6",
-    title: "Apollo Pharmacy",
-    category: "Medical",
-    emoji: "🏥",
-    amount: 780,
-    type: "expense",
-    date: "1 Aug, 11:00 AM",
-    icon: Heart,
-    iconColor: "bg-red-500/10 text-red-400",
-  },
-  {
-    id: "t7",
-    title: "Netflix Subscription",
-    category: "Entertainment",
-    emoji: "🎬",
-    amount: 649,
-    type: "expense",
-    date: "1 Aug, 12:00 AM",
-    icon: Film,
-    iconColor: "bg-purple-500/10 text-purple-400",
-  },
-  {
-    id: "t8",
-    title: "Electricity Bill - BESCOM",
-    category: "Bills & Utilities",
-    emoji: "⚡",
-    amount: 1250,
-    type: "expense",
-    date: "31 Jul, 3:00 PM",
-    icon: Zap,
-    iconColor: "bg-yellow-500/10 text-yellow-400",
-  },
-];
+interface RecentTransactionsProps {
+  transactions?: TransactionData[];
+  isLoading?: boolean;
+  onAdd?: () => void;
+}
 
-export function RecentTransactions() {
+// ─── Date Formatter ─────────────────────────────────────────────────
+
+function formatTransactionDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const txDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  if (txDate.getTime() === today.getTime()) {
+    return `Today, ${date.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true })}`;
+  }
+  if (txDate.getTime() === yesterday.getTime()) {
+    return `Yesterday, ${date.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true })}`;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+  });
+}
+
+// ─── Loading Skeleton ───────────────────────────────────────────────
+
+function TransactionSkeleton() {
+  return (
+    <div className="space-y-1.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex items-center justify-between p-3 rounded-xl animate-pulse">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-slate-800/80" />
+            <div>
+              <div className="w-32 h-3.5 rounded bg-slate-800/80 mb-1.5" />
+              <div className="w-24 h-2.5 rounded bg-slate-800/60" />
+            </div>
+          </div>
+          <div className="w-16 h-4 rounded bg-slate-800/80" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Empty State ────────────────────────────────────────────────────
+
+function TransactionsEmpty({ onAdd }: { onAdd?: () => void }) {
+  return (
+    <div className="py-10 text-center">
+      <p className="text-sm text-slate-400 mb-1">No transactions yet</p>
+      <p className="text-xs text-slate-500">
+        Add your first transaction to see it here.
+      </p>
+      {onAdd && (
+        <button
+          onClick={onAdd}
+          className="mt-3 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors focus:outline-none focus:underline"
+        >
+          + Add Transaction
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────────
+
+export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTransactionsProps) {
+  const hasData = transactions && transactions.length > 0;
+  const count = transactions?.length ?? 0;
+
   return (
     <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-white">Recent Transactions</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{mockTransactions.length} transactions this week</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {isLoading ? "Loading..." : `${count} recent transaction${count !== 1 ? "s" : ""}`}
+          </p>
         </div>
         <Link
           href="/dashboard/transactions"
@@ -137,56 +121,64 @@ export function RecentTransactions() {
         </Link>
       </div>
 
-      <div className="space-y-1.5">
-        {mockTransactions.map((tx) => {
-          const Icon = tx.icon;
-          return (
-            <div
-              key={tx.id}
-              className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/40 transition-colors group/tx cursor-pointer"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={cn("p-2 rounded-xl shrink-0 border border-transparent", tx.iconColor)}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white truncate">{tx.title}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[11px] text-slate-500">{tx.category}</span>
-                    <span className="text-slate-700">•</span>
-                    <span className="text-[11px] text-slate-500">{tx.date}</span>
-                  </div>
-                </div>
-              </div>
+      {isLoading ? (
+        <TransactionSkeleton />
+      ) : !hasData ? (
+        <TransactionsEmpty onAdd={onAdd} />
+      ) : (
+        <div className="space-y-1.5">
+          {transactions.map((tx) => {
+            const catConfig = getCategoryConfig(tx.category);
+            const Icon = catConfig.icon;
 
-              <div className="flex items-center gap-2 shrink-0 ml-3">
-                <div className="text-right">
-                  <p className={cn(
-                    "text-sm font-semibold",
-                    tx.type === "income" ? "text-emerald-400" : "text-white"
-                  )}>
-                    {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
-                  </p>
+            return (
+              <div
+                key={tx.id}
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/40 transition-colors group/tx cursor-pointer"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={cn("p-2 rounded-xl shrink-0 border border-transparent", catConfig.bgColor, catConfig.iconColor)}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-white truncate">{tx.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px] text-slate-500">{tx.category}</span>
+                      <span className="text-slate-700">•</span>
+                      <span className="text-[11px] text-slate-500">{formatTransactionDate(tx.date)}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className={cn(
-                  "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider",
-                  tx.type === "income"
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                    : "bg-red-500/10 text-red-400 border border-red-500/20"
-                )}>
-                  {tx.type === "income" ? (
-                    <ArrowDownLeft className="w-3 h-3" />
-                  ) : (
-                    <ArrowUpRight className="w-3 h-3" />
-                  )}
+
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <div className="text-right">
+                    <p className={cn(
+                      "text-sm font-semibold",
+                      tx.type === "income" ? "text-emerald-400" : "text-white"
+                    )}>
+                      {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                  <div className={cn(
+                    "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider",
+                    tx.type === "income"
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-red-500/10 text-red-400 border border-red-500/20"
+                  )}>
+                    {tx.type === "income" ? (
+                      <ArrowDownLeft className="w-3 h-3" />
+                    ) : (
+                      <ArrowUpRight className="w-3 h-3" />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

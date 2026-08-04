@@ -1,0 +1,190 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { db } from "@/lib/db";
+import { getAuthFromCookies } from "@/lib/auth";
+import {
+  createTransactionSchema,
+  transactionQuerySchema,
+} from "@/lib/validations/transaction";
+import type { Prisma } from "@prisma/client";
+
+// ─── GET /api/transactions — List transactions ──────────────────────
+
+export async function GET(request: NextRequest) {
+  try {
+    const payload = await getAuthFromCookies();
+
+    if (!payload) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    // Parse query parameters
+    const { searchParams } = request.nextUrl;
+    const queryResult = transactionQuerySchema.safeParse({
+      page: searchParams.get("page") ?? undefined,
+      limit: searchParams.get("limit") ?? undefined,
+      type: searchParams.get("type") ?? undefined,
+      category: searchParams.get("category") ?? undefined,
+      dateFrom: searchParams.get("dateFrom") ?? undefined,
+      dateTo: searchParams.get("dateTo") ?? undefined,
+      search: searchParams.get("search") ?? undefined,
+      sort: searchParams.get("sort") ?? undefined,
+      order: searchParams.get("order") ?? undefined,
+    });
+
+    if (!queryResult.success) {
+      const errors = queryResult.error.flatten().fieldErrors;
+      return NextResponse.json(
+        { error: "Invalid query parameters", details: errors },
+        { status: 400 }
+      );
+    }
+
+    const { page, limit, type, category, dateFrom, dateTo, search, sort, order } =
+      queryResult.data;
+
+    // Build where clause
+    const where: Prisma.TransactionWhereInput = {
+      userId: payload.userId,
+    };
+
+    if (type) {
+      where.type = type;
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (dateFrom || dateTo) {
+      where.date = {};
+      if (dateFrom) {
+        where.date.gte = new Date(dateFrom);
+      }
+      if (dateTo) {
+        where.date.lte = new Date(dateTo);
+      }
+    }
+
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: "insensitive",
+      };
+    }
+
+    // Build orderBy
+    const orderBy: Prisma.TransactionOrderByWithRelationInput = {
+      [sort]: order,
+    };
+
+    // Execute query with pagination
+    const skip = (page - 1) * limit;
+
+    const [transactions, total] = await Promise.all([
+      db.transaction.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          amount: true,
+          type: true,
+          category: true,
+          note: true,
+          date: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      db.transaction.count({ where }),
+    ]);
+
+    return NextResponse.json(
+      {
+        transactions,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("[TRANSACTIONS_LIST_ERROR]", error);
+    return NextResponse.json(
+      { error: "Something went wrong." },
+      { status: 500 }
+    );
+  }
+}
+
+// ─── POST /api/transactions — Create transaction ────────────────────
+
+export async function POST(request: Request) {
+  try {
+    const payload = await getAuthFromCookies();
+
+    if (!payload) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+
+    // Validate input
+    const result = createTransactionSchema.safeParse(body);
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors;
+      return NextResponse.json(
+        { error: "Validation failed", details: errors },
+        { status: 400 }
+      );
+    }
+
+    const { title, amount, type, category, note, date } = result.data;
+
+    const transaction = await db.transaction.create({
+      data: {
+        title,
+        amount,
+        type,
+        category,
+        note: note || null,
+        date: new Date(date),
+        userId: payload.userId,
+      },
+      select: {
+        id: true,
+        title: true,
+        amount: true,
+        type: true,
+        category: true,
+        note: true,
+        date: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Transaction created successfully", transaction },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("[TRANSACTION_CREATE_ERROR]", error);
+    return NextResponse.json(
+      { error: "Something went wrong." },
+      { status: 500 }
+    );
+  }
+}
