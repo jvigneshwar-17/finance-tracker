@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SidebarProvider } from "@/hooks/use-sidebar";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export const metadata: Metadata = {
   title: "Dashboard — ExpenseFlow",
@@ -12,7 +14,9 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100">
-      {children}
+      <SidebarProvider>
+        <DashboardShell>{children}</DashboardShell>
+      </SidebarProvider>
     </div>
   );
 }

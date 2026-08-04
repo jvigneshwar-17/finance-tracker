@@ -1,166 +1,164 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { TrendingUp, LogOut, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  PiggyBank,
+  Target,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { StatCard, SkeletonCard } from "@/components/dashboard/stat-card";
+import { SpendingLineChart } from "@/components/dashboard/charts/spending-line-chart";
+import { CategoryPieChart } from "@/components/dashboard/charts/category-pie-chart";
+import { IncomeExpenseBarChart } from "@/components/dashboard/charts/income-expense-bar-chart";
+import { RecentTransactions } from "@/components/dashboard/recent-transactions";
+import { QuickActions } from "@/components/dashboard/quick-actions";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string | null;
-  currency: string;
-  emailVerified: boolean;
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function formatDate(): string {
+  return new Date().toLocaleDateString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await fetch("/api/auth/me");
-        if (!response.ok) {
-          router.push("/login");
-          return;
-        }
-        const data = await response.json();
-        setUser(data.user);
-      } catch {
-        router.push("/login");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [router]);
-
-  async function handleLogout() {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      toast.success("Logged out successfully");
-      router.push("/login");
-      router.refresh();
-    } catch {
-      toast.error("Logout failed");
-    }
-  }
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-          <p className="text-sm text-slate-400">Loading dashboard...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="space-y-2 animate-pulse">
+          <div className="w-64 h-8 rounded-lg bg-slate-800/80" />
+          <div className="w-48 h-4 rounded bg-slate-800/60" />
+        </div>
+
+        {/* Stat cards skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+
+        {/* Charts skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="h-[320px] rounded-2xl bg-slate-900/60 border border-slate-800/80 animate-pulse" />
+          <div className="h-[320px] rounded-2xl bg-slate-900/60 border border-slate-800/80 animate-pulse" />
         </div>
       </div>
     );
   }
 
+  const firstName = user?.name?.split(" ")[0] || "there";
+
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20">
-              <TrendingUp className="w-4 h-4 stroke-[2.5]" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              ExpenseFlow
-            </span>
-          </div>
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-6 max-w-[1400px]"
+    >
+      {/* Welcome Header */}
+      <motion.div variants={item}>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          {getGreeting()}, {firstName}! 👋
+        </h1>
+        <p className="text-sm text-slate-400 mt-1">{formatDate()}</p>
+      </motion.div>
 
-          <div className="flex items-center gap-4">
-            {/* User Initials Avatar */}
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">
-                {user?.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2) || "?"}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs text-slate-400">{user?.email}</p>
-              </div>
-            </div>
+      {/* Stat Cards */}
+      <motion.div
+        variants={item}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"
+      >
+        <StatCard
+          icon={Wallet}
+          title="Total Balance"
+          amount="₹1,48,250"
+          trend={{ value: "+12.4%", direction: "up", label: "vs last month" }}
+          iconColor="text-emerald-400"
+          iconBg="bg-emerald-500/10 border-emerald-500/20"
+        />
+        <StatCard
+          icon={TrendingUp}
+          title="Monthly Income"
+          amount="₹45,000"
+          trend={{ value: "+6.7%", direction: "up", label: "vs last month" }}
+          iconColor="text-teal-400"
+          iconBg="bg-teal-500/10 border-teal-500/20"
+        />
+        <StatCard
+          icon={TrendingDown}
+          title="Monthly Expenses"
+          amount="₹18,450"
+          trend={{ value: "-3.2%", direction: "down", label: "vs last month" }}
+          iconColor="text-red-400"
+          iconBg="bg-red-500/10 border-red-500/20"
+        />
+        <StatCard
+          icon={PiggyBank}
+          title="Savings"
+          amount="₹26,550"
+          trend={{ value: "+18.2%", direction: "up", label: "vs last month" }}
+          iconColor="text-cyan-400"
+          iconBg="bg-cyan-500/10 border-cyan-500/20"
+        />
+        <StatCard
+          icon={Target}
+          title="Budget Remaining"
+          amount="₹6,550"
+          trend={{ value: "73%", direction: "up", label: "budget used" }}
+          iconColor="text-purple-400"
+          iconBg="bg-purple-500/10 border-purple-500/20"
+        />
+      </motion.div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="gap-1.5"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Analytics Charts */}
+      <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <SpendingLineChart />
+        <CategoryPieChart />
+      </motion.div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">
-              Welcome back, {user?.name?.split(" ")[0]}!
-            </h1>
-            <p className="text-slate-400 mt-2">
-              Here&apos;s your financial overview. Start tracking your expenses.
-            </p>
-          </div>
+      <motion.div variants={item}>
+        <IncomeExpenseBarChart />
+      </motion.div>
 
-          {/* Placeholder Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                label: "Total Balance",
-                value: "₹48,250.00",
-                change: "+12.4%",
-              },
-              {
-                label: "This Month",
-                value: "₹18,450.00",
-                change: "-3.2%",
-              },
-              {
-                label: "Budget Used",
-                value: "75%",
-                change: "₹1,500 left",
-              },
-            ].map((card, i) => (
-              <div
-                key={i}
-                className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl space-y-2"
-              >
-                <p className="text-sm text-slate-400">{card.label}</p>
-                <p className="text-2xl font-bold text-white">{card.value}</p>
-                <p className="text-xs text-emerald-400 font-medium">
-                  {card.change}
-                </p>
-              </div>
-            ))}
-          </div>
+      {/* Recent Transactions */}
+      <motion.div variants={item}>
+        <RecentTransactions />
+      </motion.div>
 
-          {/* Coming Soon */}
-          <div className="p-8 rounded-2xl bg-slate-900/40 border border-slate-800/60 border-dashed text-center space-y-3">
-            <p className="text-lg font-semibold text-slate-300">
-              Full dashboard coming in Sprint 3.2 🚀
-            </p>
-            <p className="text-sm text-slate-500">
-              Transaction history, charts, budget management, and more.
-            </p>
-          </div>
-        </div>
-      </main>
-    </div>
+      {/* Quick Actions */}
+      <motion.div variants={item}>
+        <QuickActions />
+      </motion.div>
+    </motion.div>
   );
 }
