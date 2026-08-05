@@ -16,12 +16,6 @@ export async function GET() {
       );
     }
 
-    console.log("[DEBUG_GET_BUDGETS]", {
-      dbExists: !!db,
-      budgetExists: !!(db && db.budget),
-      payload,
-    });
-
     const budgets = await db.budget.findMany({
       where: { userId: payload.userId },
       orderBy: { createdAt: "desc" },
@@ -80,13 +74,6 @@ export async function POST(request: Request) {
     }
 
     const { category, amount } = result.data;
-
-    console.log("[DEBUG_POST_BUDGET]", {
-      dbExists: !!db,
-      budgetExists: !!(db && db.budget),
-      payload,
-      body: { category, amount },
-    });
 
     // Check for duplicate category budget using findFirst for robust querying
     const existing = await db.budget.findFirst({
