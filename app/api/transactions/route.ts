@@ -6,7 +6,6 @@ import {
   createTransactionSchema,
   transactionQuerySchema,
 } from "@/lib/validations/transaction";
-import type { Prisma } from "@prisma/client";
 
 // ─── GET /api/transactions — List transactions ──────────────────────
 
@@ -47,7 +46,8 @@ export async function GET(request: NextRequest) {
       queryResult.data;
 
     // Build where clause
-    const where: Prisma.TransactionWhereInput = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {
       userId: payload.userId,
     };
 
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build orderBy
-    const orderBy: Prisma.TransactionOrderByWithRelationInput = {
+    const orderBy: Record<string, string> = {
       [sort]: order,
     };
 
