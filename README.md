@@ -3,11 +3,11 @@
 
 A modern personal finance tracker built with Next.js, Prisma, PostgreSQL (Neon), and Vercel.
 
-## 🚀 Live Demo
+##  Live Demo
 
 https://expenseflow-a9lpfab5p-aether-industries.vercel.app
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - Next.js 16
 - React 19
