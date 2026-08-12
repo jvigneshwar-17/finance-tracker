@@ -36,9 +36,9 @@ export async function POST(request: Request) {
         },
       });
 
-      // Log reset URL (email integration point)
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
-      console.log(`[PASSWORD RESET] URL for ${email}: ${resetUrl}`);
+      // Email integration point — send password reset email here
+      // NOTE: Token is intentionally NOT logged to prevent exposure in production logs
+      console.info(`[PASSWORD RESET] Reset email requested for ${email}`);
     }
 
     // Always return success to prevent email enumeration

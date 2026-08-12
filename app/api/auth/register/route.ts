@@ -64,9 +64,9 @@ export async function POST(request: Request) {
     const token = await generateToken({ userId: user.id, email: user.email });
     await setAuthCookie(token);
 
-    // Log verification URL (email integration point)
-    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${emailVerificationToken}`;
-    console.log(`[EMAIL VERIFICATION] URL for ${email}: ${verifyUrl}`);
+    // Email integration point — send verification email here
+    // NOTE: Token is intentionally NOT logged to prevent exposure in production logs
+    console.info(`[EMAIL VERIFICATION] Verification email requested for ${email}`);
 
     return NextResponse.json(
       { message: "Account created successfully", user },
