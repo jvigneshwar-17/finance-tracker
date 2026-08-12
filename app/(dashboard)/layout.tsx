@@ -14,7 +14,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100">
+    <div className="min-h-screen bg-background text-foreground">
       <SidebarProvider>
         <TransactionsProvider>
           <DashboardShell>{children}</DashboardShell>

@@ -66,7 +66,8 @@ function CategoryCard({ name, amount, percentage, rank }: CategoryCardProps) {
   return (
     <motion.div
       variants={item}
-      className="group relative p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl hover:bg-slate-900/80 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+      className="group relative p-4 rounded-2xl border border-border backdrop-blur-xl hover:border-border transition-all duration-300 hover:-translate-y-0.5"
+      style={{ background: "var(--surface)" }}
     >
       {/* Hover glow */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/[0.03] via-transparent to-teal-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -77,27 +78,27 @@ function CategoryCard({ name, amount, percentage, rank }: CategoryCardProps) {
           <div className={cn("p-2.5 rounded-xl border", config.bgColor, `border-${config.iconColor.replace("text-", "")}/20`)}>
             <Icon className={cn("w-[18px] h-[18px]", config.iconColor)} />
           </div>
-          <span className="text-[11px] font-semibold text-slate-500 bg-slate-800/80 px-2 py-0.5 rounded-full border border-slate-700/60">
+          <span className="text-[11px] font-semibold text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border">
             #{rank}
           </span>
         </div>
 
         {/* Category name */}
-        <p className="text-xs text-slate-400 font-medium mb-1">{name}</p>
+        <p className="text-xs text-muted-foreground font-medium mb-1">{name}</p>
 
         {/* Amount */}
-        <p className="text-xl font-bold text-white tracking-tight mb-3">
+        <p className="text-xl font-bold text-foreground tracking-tight mb-3">
           {formatAmount(amount)}
         </p>
 
         {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-muted-foreground">
               {percentage.toFixed(1)}% of expenses
             </span>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-secondary/80 overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{ backgroundColor: config.colorHex }}
@@ -141,10 +142,10 @@ export default function AnalyticsPage() {
     >
       {/* Header */}
       <motion.div variants={item}>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           Analytics 📊
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Financial overview for {getCurrentMonthLabel()}
         </p>
       </motion.div>
@@ -229,20 +230,20 @@ export default function AnalyticsPage() {
 
       {/* Expenses by Category Section */}
       <motion.div variants={item}>
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl">
+        <div className="p-5 rounded-2xl border border-border backdrop-blur-xl" style={{ background: "var(--surface)" }}>
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-sm font-semibold text-white">
+              <h2 className="text-sm font-semibold text-foreground">
                 Expenses by Category
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {getCurrentMonthLabel()} • Sorted by highest spend
               </p>
             </div>
             {totalCategoryExpense > 0 && (
               <div className="text-right">
-                <p className="text-xs text-slate-500">Total</p>
-                <p className="text-sm font-bold text-white">
+                <p className="text-xs text-muted-foreground">Total</p>
+                <p className="text-sm font-bold text-foreground">
                   {formatAmount(totalCategoryExpense)}
                 </p>
               </div>
@@ -254,15 +255,16 @@ export default function AnalyticsPage() {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="p-4 rounded-2xl bg-slate-800/40 border border-slate-800/60 space-y-3 animate-pulse"
+                  className="p-4 rounded-2xl border border-border space-y-3 animate-pulse"
+                  style={{ background: "var(--surface-inner)" }}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-slate-700/60" />
-                    <div className="w-8 h-5 rounded-full bg-slate-700/60" />
+                    <div className="w-10 h-10 rounded-xl" style={{ background: "var(--skeleton-soft)" }} />
+                    <div className="w-8 h-5 rounded-full" style={{ background: "var(--skeleton-soft)" }} />
                   </div>
-                  <div className="w-20 h-3 rounded bg-slate-700/60" />
-                  <div className="w-24 h-6 rounded bg-slate-700/60" />
-                  <div className="w-full h-1.5 rounded-full bg-slate-700/60" />
+                  <div className="w-20 h-3 rounded" style={{ background: "var(--skeleton-soft)" }} />
+                  <div className="w-24 h-6 rounded" style={{ background: "var(--skeleton-soft)" }} />
+                  <div className="w-full h-1.5 rounded-full" style={{ background: "var(--skeleton-soft)" }} />
                 </div>
               ))}
             </div>

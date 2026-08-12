@@ -74,8 +74,8 @@ export default function DashboardPage() {
     return (
       <div className="space-y-6">
         <div className="space-y-2 animate-pulse">
-          <div className="w-64 h-8 rounded-lg bg-slate-800/80" />
-          <div className="w-48 h-4 rounded bg-slate-800/60" />
+          <div className="w-64 h-8 rounded-lg" style={{ background: "var(--skeleton)" }} />
+          <div className="w-48 h-4 rounded" style={{ background: "var(--skeleton-soft)" }} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -83,8 +83,8 @@ export default function DashboardPage() {
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="h-[320px] rounded-2xl bg-slate-900/60 border border-slate-800/80 animate-pulse" />
-          <div className="h-[320px] rounded-2xl bg-slate-900/60 border border-slate-800/80 animate-pulse" />
+          <div className="h-[320px] rounded-2xl border border-border animate-pulse" style={{ background: "var(--surface)" }} />
+          <div className="h-[320px] rounded-2xl border border-border animate-pulse" style={{ background: "var(--surface)" }} />
         </div>
       </div>
     );
@@ -112,10 +112,10 @@ export default function DashboardPage() {
           className="flex items-start justify-between gap-4 flex-wrap"
         >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {getGreeting()}, {firstName}! 👋
             </h1>
-            <p className="text-sm text-slate-400 mt-1">{formatDate()}</p>
+            <p className="text-sm text-muted-foreground mt-1">{formatDate()}</p>
           </div>
           <Button
             onClick={() => handleOpenAdd("expense")}

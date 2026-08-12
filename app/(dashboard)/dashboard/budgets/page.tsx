@@ -78,8 +78,9 @@ function BudgetCard({ budget, spent, onEdit, onDelete }: BudgetCardProps) {
         "group relative p-5 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5",
         isOverBudget
           ? "bg-red-950/40 border border-red-500/30 hover:border-red-500/50"
-          : "bg-slate-900/60 border border-slate-800/80 hover:bg-slate-900/80 hover:border-slate-700/80"
+          : "border border-border hover:border-border"
       )}
+      style={!isOverBudget ? { background: "var(--surface)" } : undefined}
     >
       {/* Hover glow */}
       <div
@@ -99,8 +100,8 @@ function BudgetCard({ budget, spent, onEdit, onDelete }: BudgetCardProps) {
               <Icon className={cn("w-[18px] h-[18px]", config.iconColor)} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">{budget.category}</p>
-              <p className="text-[11px] text-slate-500">Monthly budget</p>
+              <p className="text-sm font-semibold text-foreground">{budget.category}</p>
+              <p className="text-[11px] text-muted-foreground">Monthly budget</p>
             </div>
           </div>
 
@@ -108,14 +109,14 @@ function BudgetCard({ budget, spent, onEdit, onDelete }: BudgetCardProps) {
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(budget)}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800/60 transition-colors"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
               aria-label={`Edit ${budget.category} budget`}
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => onDelete(budget)}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
               aria-label={`Delete ${budget.category} budget`}
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -126,17 +127,17 @@ function BudgetCard({ budget, spent, onEdit, onDelete }: BudgetCardProps) {
         {/* Stats: Budget / Spent / Remaining */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <p className="text-[11px] text-slate-500 mb-0.5">Budget</p>
-            <p className="text-sm font-bold text-white">{formatAmount(budget.amount)}</p>
+            <p className="text-[11px] text-muted-foreground mb-0.5">Budget</p>
+            <p className="text-sm font-bold text-foreground">{formatAmount(budget.amount)}</p>
           </div>
           <div>
-            <p className="text-[11px] text-slate-500 mb-0.5">Spent</p>
-            <p className={cn("text-sm font-bold", isOverBudget ? "text-red-400" : "text-white")}>
+            <p className="text-[11px] text-muted-foreground mb-0.5">Spent</p>
+            <p className={cn("text-sm font-bold", isOverBudget ? "text-red-400" : "text-foreground")}>
               {formatAmount(spent)}
             </p>
           </div>
           <div>
-            <p className="text-[11px] text-slate-500 mb-0.5">Remaining</p>
+            <p className="text-[11px] text-muted-foreground mb-0.5">Remaining</p>
             <p className={cn("text-sm font-bold", isOverBudget ? "text-red-400" : "text-emerald-400")}>
               {isOverBudget ? `-${formatAmount(Math.abs(remaining))}` : formatAmount(remaining)}
             </p>
@@ -146,11 +147,11 @@ function BudgetCard({ budget, spent, onEdit, onDelete }: BudgetCardProps) {
         {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className={cn("text-[11px] font-medium", isOverBudget ? "text-red-400" : "text-slate-500")}>
+            <span className={cn("text-[11px] font-medium", isOverBudget ? "text-red-400" : "text-muted-foreground")}>
               {actualPercentage.toFixed(0)}% used
             </span>
           </div>
-          <div className="h-2 rounded-full bg-slate-800/80 overflow-hidden">
+          <div className="h-2 rounded-full bg-secondary/80 overflow-hidden">
             <motion.div
               className={cn("h-full rounded-full", isOverBudget ? "bg-red-500" : "bg-emerald-500")}
               initial={{ width: 0 }}
@@ -229,17 +230,17 @@ function BudgetForm({
         <div className="space-y-2">
           <Label htmlFor="budget-category">Category</Label>
           {availableCategories.length === 0 ? (
-            <p className="text-xs text-slate-500">All categories already have budgets.</p>
+            <p className="text-xs text-muted-foreground">All categories already have budgets.</p>
           ) : (
             <select
               id="budget-category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="flex h-11 w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50"
+              className="flex h-11 w-full rounded-xl border border-border bg-input/80 px-4 py-2 text-sm text-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50"
             >
-              <option value="" className="bg-slate-900">Select category…</option>
+              <option value="" className="bg-card">Select category…</option>
               {availableCategories.map((cat) => (
-                <option key={cat} value={cat} className="bg-slate-900">
+                <option key={cat} value={cat} className="bg-card">
                   {cat}
                 </option>
               ))}
@@ -251,7 +252,7 @@ function BudgetForm({
       {mode === "edit" && (
         <div className="space-y-2">
           <Label>Category</Label>
-          <p className="text-sm text-white font-medium">{initialCategory}</p>
+          <p className="text-sm text-foreground font-medium">{initialCategory}</p>
         </div>
       )}
 
@@ -419,31 +420,32 @@ export default function BudgetsPage() {
     return (
       <div className="space-y-6 max-w-[1400px]">
         <div className="space-y-2 animate-pulse">
-          <div className="w-48 h-8 rounded-lg bg-slate-800/80" />
-          <div className="w-64 h-4 rounded bg-slate-800/60" />
+          <div className="w-48 h-8 rounded-lg" style={{ background: "var(--skeleton)" }} />
+          <div className="w-64 h-4 rounded" style={{ background: "var(--skeleton-soft)" }} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-4 animate-pulse"
+              className="p-5 rounded-2xl border border-border space-y-4 animate-pulse"
+              style={{ background: "var(--surface)" }}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800/80" />
+                <div className="w-10 h-10 rounded-xl" style={{ background: "var(--skeleton)" }} />
                 <div className="space-y-1.5">
-                  <div className="w-24 h-4 rounded bg-slate-800/80" />
-                  <div className="w-16 h-3 rounded bg-slate-800/60" />
+                  <div className="w-24 h-4 rounded" style={{ background: "var(--skeleton)" }} />
+                  <div className="w-16 h-3 rounded" style={{ background: "var(--skeleton-soft)" }} />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {Array.from({ length: 3 }).map((_, j) => (
                   <div key={j} className="space-y-1">
-                    <div className="w-12 h-3 rounded bg-slate-800/60" />
-                    <div className="w-16 h-4 rounded bg-slate-800/80" />
+                    <div className="w-12 h-3 rounded" style={{ background: "var(--skeleton-soft)" }} />
+                    <div className="w-16 h-4 rounded" style={{ background: "var(--skeleton)" }} />
                   </div>
                 ))}
               </div>
-              <div className="w-full h-2 rounded-full bg-slate-800/80" />
+              <div className="w-full h-2 rounded-full" style={{ background: "var(--skeleton)" }} />
             </div>
           ))}
         </div>
@@ -497,10 +499,10 @@ export default function BudgetsPage() {
         {/* Header */}
         <motion.div variants={item} className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Budgets 💰
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Track your monthly spending limits
             </p>
           </div>

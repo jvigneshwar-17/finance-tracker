@@ -41,21 +41,22 @@ export function SpendingInsights() {
 
   if (statsLoading) {
     return (
-      <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl space-y-4">
+      <div className="p-5 rounded-2xl border border-border backdrop-blur-xl space-y-4" style={{ background: "var(--surface)" }}>
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded bg-slate-800 animate-pulse" />
-          <div className="w-36 h-5 rounded bg-slate-800 animate-pulse" />
+          <div className="w-5 h-5 rounded animate-pulse" style={{ background: "var(--skeleton)" }} />
+          <div className="w-36 h-5 rounded animate-pulse" style={{ background: "var(--skeleton)" }} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="p-4 rounded-xl bg-slate-800/40 border border-slate-800/60 space-y-3 animate-pulse"
+              className="p-4 rounded-xl border border-border space-y-3 animate-pulse"
+              style={{ background: "var(--surface-inner)" }}
             >
-              <div className="w-8 h-8 rounded-lg bg-slate-700/60" />
-              <div className="w-24 h-3 rounded bg-slate-700/60" />
-              <div className="w-32 h-6 rounded bg-slate-700/60" />
-              <div className="w-40 h-3 rounded bg-slate-700/40" />
+              <div className="w-8 h-8 rounded-lg" style={{ background: "var(--skeleton-soft)" }} />
+              <div className="w-24 h-3 rounded" style={{ background: "var(--skeleton-soft)" }} />
+              <div className="w-32 h-6 rounded" style={{ background: "var(--skeleton-soft)" }} />
+              <div className="w-40 h-3 rounded" style={{ background: "var(--skeleton-soft)" }} />
             </div>
           ))}
         </div>
@@ -68,9 +69,9 @@ export function SpendingInsights() {
   let momValue = "N/A";
   let momSubtitle = "No previous month data available";
   let MomIcon = TrendingUp;
-  let momIconColor = "text-slate-400";
-  let momIconBg = "bg-slate-500/10 border-slate-500/20";
-  let momBadgeColor = "text-slate-400 bg-slate-800/80 border-slate-700/60";
+  let momIconColor = "text-muted-foreground";
+  let momIconBg = "bg-secondary/60 border-border";
+  let momBadgeColor = "text-muted-foreground bg-secondary/80 border-border";
 
   if (insights.monthOverMonthDirection === "increase") {
     momValue = `+${insights.monthOverMonthPercentChange?.toFixed(1)}%`;
@@ -106,7 +107,7 @@ export function SpendingInsights() {
   if (insights.monthlySavings === 0) {
     savingsValueText = "₹0";
     savingsSubtitle = "You broke even this month.";
-    savingsBadgeColor = "text-slate-400 bg-slate-800/80 border-slate-700/60";
+    savingsBadgeColor = "text-muted-foreground bg-secondary/80 border-border";
   } else if (insights.monthlySavings < 0) {
     // Do not display negative savings values directly (Math.abs format used)
     savingsValueText = formatAmount(insights.monthlySavings);
@@ -123,14 +124,14 @@ export function SpendingInsights() {
   }
 
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl space-y-4">
+    <div className="p-5 rounded-2xl border border-border backdrop-blur-xl space-y-4" style={{ background: "var(--surface)" }}>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400" />
             Spending Insights
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Key financial takeaways for this month
           </p>
         </div>
@@ -145,7 +146,8 @@ export function SpendingInsights() {
         {/* Card 1: Month-over-Month Comparison */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className={cn("p-2 rounded-lg border", momIconBg)}>
@@ -155,15 +157,16 @@ export function SpendingInsights() {
               {momTitle}
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Monthly Spending Change</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1">{momValue}</p>
-          <p className="text-[11px] text-slate-500">{momSubtitle}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Monthly Spending Change</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1">{momValue}</p>
+          <p className="text-[11px] text-muted-foreground/70">{momSubtitle}</p>
         </motion.div>
 
         {/* Card 2: Top Expense Category */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className={cn("p-2 rounded-lg border", largestCatConfig ? largestCatConfig.bgColor : "bg-teal-500/10", largestCatConfig ? `border-${largestCatConfig.iconColor.replace("text-", "")}/20` : "border-teal-500/20")}>
@@ -173,11 +176,11 @@ export function SpendingInsights() {
               TOP CATEGORY
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Largest Expense Category</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1 truncate">
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Largest Expense Category</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1 truncate">
             {insights.largestCategory ? insights.largestCategory.name : "None"}
           </p>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-muted-foreground/70">
             {insights.largestCategory
               ? `${formatAmount(insights.largestCategory.amount)} spent this month`
               : "No expenses recorded this month."}
@@ -187,7 +190,8 @@ export function SpendingInsights() {
         {/* Card 3: Monthly Net Savings */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
@@ -197,17 +201,18 @@ export function SpendingInsights() {
               NET SAVINGS
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Monthly Savings</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1">
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Monthly Savings</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1">
             {savingsValueText}
           </p>
-          <p className="text-[11px] text-slate-500">{savingsSubtitle}</p>
+          <p className="text-[11px] text-muted-foreground/70">{savingsSubtitle}</p>
         </motion.div>
 
         {/* Card 4: Highest Single Expense */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
@@ -217,11 +222,11 @@ export function SpendingInsights() {
               PEAK EXPENSE
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Highest Single Expense</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1">
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Highest Single Expense</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1">
             {insights.highestExpenseTx ? formatAmount(insights.highestExpenseTx.amount) : "₹0"}
           </p>
-          <p className="text-[11px] text-slate-500 truncate">
+          <p className="text-[11px] text-muted-foreground/70 truncate">
             {insights.highestExpenseTx ? `"${insights.highestExpenseTx.title}"` : "No expense transactions."}
           </p>
         </motion.div>
@@ -229,7 +234,8 @@ export function SpendingInsights() {
         {/* Card 5: Total Transactions Count */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
@@ -239,11 +245,11 @@ export function SpendingInsights() {
               ACTIVITY
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Total Transactions</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1">
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Total Transactions</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1">
             {insights.totalMonthTransactions}
           </p>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-muted-foreground/70">
             {insights.totalMonthTransactions === 0 ? "No transactions recorded this month" : "Income & expense records this month"}
           </p>
         </motion.div>
@@ -251,7 +257,8 @@ export function SpendingInsights() {
         {/* Card 6: Average Spending Per Active Spending Day */}
         <motion.div
           variants={item}
-          className="group relative p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-0.5"
+          className="group relative p-4 rounded-xl border border-border transition-all duration-300 hover:-translate-y-0.5"
+          style={{ background: "var(--surface-inner)" }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
@@ -261,11 +268,11 @@ export function SpendingInsights() {
               ACTIVE PACE
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mb-0.5">Avg. Daily Spending</p>
-          <p className="text-xl font-bold text-white tracking-tight mb-1">
-            {formatAmount(insights.avgDailySpending)} <span className="text-xs font-normal text-slate-400">/ day</span>
+          <p className="text-xs text-muted-foreground font-medium mb-0.5">Avg. Daily Spending</p>
+          <p className="text-xl font-bold text-foreground tracking-tight mb-1">
+            {formatAmount(insights.avgDailySpending)} <span className="text-xs font-normal text-muted-foreground">/ day</span>
           </p>
-          <p className="text-[11px] text-slate-500">{activeDaysText}</p>
+          <p className="text-[11px] text-muted-foreground/70">{activeDaysText}</p>
         </motion.div>
       </motion.div>
     </div>

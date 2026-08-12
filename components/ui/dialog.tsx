@@ -73,7 +73,8 @@ export function Dialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 backdrop-blur-sm"
+            style={{ background: "var(--overlay-bg)" }}
             onClick={onClose}
             aria-hidden="true"
           />
@@ -93,7 +94,7 @@ export function Dialog({
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               className={cn(
-                "relative w-full max-h-[calc(100vh-2rem)] sm:max-h-[85vh] flex flex-col rounded-2xl bg-slate-950 border border-slate-800/80 shadow-2xl shadow-black/50 overflow-hidden",
+                "relative w-full max-h-[calc(100vh-2rem)] sm:max-h-[85vh] flex flex-col rounded-2xl bg-card border border-border shadow-2xl shadow-black/20 overflow-hidden",
                 maxWidth,
                 className
               )}
@@ -103,21 +104,21 @@ export function Dialog({
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
               {/* Header */}
-              <div className="shrink-0 flex items-start justify-between px-5 sm:px-6 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-800/60">
+              <div className="shrink-0 flex items-start justify-between px-5 sm:px-6 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-border">
                 <div>
                   <h2
                     id="dialog-title"
-                    className="text-base font-semibold text-white"
+                    className="text-base font-semibold text-foreground"
                   >
                     {title}
                   </h2>
                   {description && (
-                    <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
                   )}
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
                   aria-label="Close dialog"
                 >
                   <X className="w-4 h-4" />
@@ -158,12 +159,12 @@ export function ConfirmDialog({
   return (
     <Dialog open={open} onClose={onClose} title={title} maxWidth="max-w-sm">
       <div className="space-y-4">
-        <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
         <div className="flex gap-3 justify-end pt-1">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-slate-300 rounded-xl border border-slate-700 bg-transparent hover:bg-slate-800/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-foreground/70 rounded-xl border border-border bg-transparent hover:bg-secondary/60 hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40 disabled:opacity-50"
           >
             Cancel
           </button>

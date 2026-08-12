@@ -62,8 +62,8 @@ const actions: QuickAction[] = [
     label: "Export Data",
     description: "Download your data",
     icon: Download,
-    color: "text-slate-500",
-    iconBg: "bg-slate-800/80 border-slate-700",
+    color: "text-muted-foreground",
+    iconBg: "bg-secondary/80 border-border",
     disabled: true,
     badge: "Coming Soon",
     actionKey: "export",
@@ -101,10 +101,10 @@ export function QuickActions({ onAddIncome, onAddExpense }: QuickActionsProps) {
   }
 
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl">
+    <div className="p-5 rounded-2xl border border-border backdrop-blur-xl" style={{ background: "var(--surface)" }}>
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-white">Quick Actions</h3>
-        <p className="text-xs text-slate-500 mt-0.5">Shortcuts to common tasks</p>
+        <h3 className="text-sm font-semibold text-foreground">Quick Actions</h3>
+        <p className="text-xs text-muted-foreground mt-0.5">Shortcuts to common tasks</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -119,13 +119,14 @@ export function QuickActions({ onAddIncome, onAddExpense }: QuickActionsProps) {
                 "focus:outline-none focus:ring-2 focus:ring-emerald-500/40",
                 "hover:-translate-y-0.5 active:scale-[0.98]",
                 action.disabled
-                  ? "border-slate-800/50 bg-slate-900/30 hover:bg-slate-800/40 hover:border-slate-700 opacity-80"
-                  : "border-slate-800/60 bg-slate-900/40 hover:bg-slate-800/60 hover:border-slate-700"
+                  ? "border-border/50 hover:bg-secondary/40 hover:border-border opacity-80"
+                  : "border-border bg-[var(--surface-inner)] hover:bg-[var(--surface-inner-hover)] hover:border-border"
               )}
+              style={{ background: action.disabled ? "var(--surface-inner)" : undefined }}
               aria-label={action.label}
             >
               {action.badge && (
-                <span className="absolute -top-2 right-2 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700 rounded-full">
+                <span className="absolute -top-2 right-2 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-secondary text-muted-foreground border border-border rounded-full">
                   {action.badge}
                 </span>
               )}
@@ -135,8 +136,8 @@ export function QuickActions({ onAddIncome, onAddExpense }: QuickActionsProps) {
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-white">{action.label}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">
+                <p className="text-xs font-semibold text-foreground">{action.label}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
                   {action.description}
                 </p>
               </div>

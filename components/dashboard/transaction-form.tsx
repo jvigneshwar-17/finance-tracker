@@ -93,7 +93,7 @@ function AmountInput({ id = "tx-amount", value, onChange, error }: AmountInputPr
 
   return (
     <div className="relative mt-1.5 flex items-center">
-      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-semibold select-none pointer-events-none z-10">
+      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold select-none pointer-events-none z-10">
         ₹
       </span>
 
@@ -115,24 +115,24 @@ function AmountInput({ id = "tx-amount", value, onChange, error }: AmountInputPr
       />
 
       {/* Custom Stepper Buttons */}
-      <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 z-10 bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
+      <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 z-10 bg-card/90 rounded-lg p-0.5 border border-border">
         <button
           type="button"
           onClick={handleDecrement}
           tabIndex={-1}
           title={`Decrease by ₹${step}`}
-          className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none disabled:opacity-30 disabled:pointer-events-none"
+          className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors focus:outline-none disabled:opacity-30 disabled:pointer-events-none"
           disabled={numericAmount <= 0}
         >
           <Minus className="w-3 h-3" />
         </button>
-        <div className="w-px h-3 bg-slate-800" />
+        <div className="w-px h-3 bg-border" />
         <button
           type="button"
           onClick={handleIncrement}
           tabIndex={-1}
           title={`Increase by ₹${step}`}
-          className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none"
+          className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors focus:outline-none"
         >
           <Plus className="w-3 h-3" />
         </button>
@@ -190,7 +190,7 @@ function TypeToggle({
 }) {
   const id = useId();
   return (
-    <div className="flex rounded-xl border border-slate-800 bg-slate-900/80 p-1 gap-1" role="group" aria-label="Transaction type">
+    <div className="flex rounded-xl border border-border bg-input/80 p-1 gap-1" role="group" aria-label="Transaction type">
       {(["income", "expense"] as const).map((t) => (
         <button
           key={t}
@@ -205,7 +205,7 @@ function TypeToggle({
               ? t === "income"
                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                 : "bg-red-500/15 text-red-400 border border-red-500/30"
-              : "text-slate-500 hover:text-slate-300"
+              : "text-muted-foreground hover:text-foreground/70"
           )}
         >
           {t === "income" ? "💰 Income" : "💸 Expense"}
@@ -229,7 +229,7 @@ function CategoryPicker({
   const categories = type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 max-h-[160px] sm:max-h-[200px] overflow-y-auto p-1 rounded-xl border border-slate-800/60 bg-slate-900/30">
+    <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 max-h-[160px] sm:max-h-[200px] overflow-y-auto p-1 rounded-xl border border-border bg-input/30">
       {categories.map((cat) => {
         const cfg = getCategoryConfig(cat);
         const Icon = cfg.icon;
@@ -245,13 +245,13 @@ function CategoryPicker({
               "focus:outline-none focus:ring-2 focus:ring-emerald-500/40",
               selected
                 ? "border-emerald-500/50 bg-emerald-500/10"
-                : "border-slate-800/60 bg-slate-900/40 hover:bg-slate-800/40 hover:border-slate-700"
+                : "border-border bg-[var(--surface-inner)] hover:bg-[var(--surface-inner-hover)] hover:border-border"
             )}
           >
             <div className={cn("p-1 rounded-lg", cfg.bgColor, cfg.iconColor)}>
               <Icon className="w-3.5 h-3.5" />
             </div>
-            <span className={cn("text-[10px] font-medium leading-tight truncate w-full", selected ? "text-emerald-400" : "text-slate-400")}>
+            <span className={cn("text-[10px] font-medium leading-tight truncate w-full", selected ? "text-emerald-400" : "text-muted-foreground")}>
               {cat}
             </span>
           </button>
@@ -387,14 +387,14 @@ export function TransactionForm({
       <div>
         <Label htmlFor="tx-note">
           Note{" "}
-          <span className="text-slate-600 font-normal">(optional)</span>
+          <span className="text-muted-foreground/60 font-normal">(optional)</span>
         </Label>
         <textarea
           id="tx-note"
           rows={2}
           placeholder="Any extra details…"
           className={cn(
-            "mt-1.5 flex w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 transition-colors duration-200 resize-none",
+            "mt-1.5 flex w-full rounded-xl border border-border bg-input/80 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 resize-none",
             "focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50",
             "disabled:cursor-not-allowed disabled:opacity-50"
           )}
@@ -404,7 +404,7 @@ export function TransactionForm({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 justify-end pt-1 border-t border-slate-800/60">
+      <div className="flex gap-3 justify-end pt-1 border-t border-border">
         <Button
           type="button"
           variant="outline"

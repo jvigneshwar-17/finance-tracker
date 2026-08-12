@@ -26,9 +26,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       default:
         "bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 font-semibold hover:brightness-110 shadow-lg shadow-emerald-500/20 glow-emerald",
       outline:
-        "border border-slate-700 bg-transparent text-slate-200 hover:bg-slate-800/80 hover:text-white hover:border-slate-600",
+        "border border-border bg-transparent text-foreground/80 hover:bg-secondary/80 hover:text-foreground hover:border-border",
       ghost:
-        "bg-transparent text-slate-300 hover:bg-slate-800/60 hover:text-white",
+        "bg-transparent text-foreground/70 hover:bg-secondary/60 hover:text-foreground",
       destructive:
         "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20",
     };
@@ -44,7 +44,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         className={cn(
           "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 active:scale-[0.98]",
-          "focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 focus:ring-offset-slate-950",
+          "focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 focus:ring-offset-background",
           "disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
           sizes[size],

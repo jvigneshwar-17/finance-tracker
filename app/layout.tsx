@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/hooks/use-theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,22 +28,32 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: "#0f172a",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              color: "#f8fafc",
-              fontSize: "14px",
-            },
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("expenseflow-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}else{document.documentElement.setAttribute("data-theme","dark")}}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();`,
           }}
-          richColors
-          closeButton
         />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider>
+          {children}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--card-foreground)",
+                fontSize: "14px",
+              },
+            }}
+            richColors
+            closeButton
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

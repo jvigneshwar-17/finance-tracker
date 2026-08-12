@@ -39,12 +39,12 @@ export function EmptyState({
         )}
       >
         <div className="relative mb-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-slate-400" />
+          <div className="w-10 h-10 rounded-xl bg-secondary/60 border border-border flex items-center justify-center">
+            <Icon className="w-5 h-5 text-muted-foreground" />
           </div>
         </div>
-        <p className="text-xs font-semibold text-slate-300 mb-0.5">{title}</p>
-        <p className="text-[11px] text-slate-500 max-w-[220px] leading-tight">
+        <p className="text-xs font-semibold text-foreground/80 mb-0.5">{title}</p>
+        <p className="text-[11px] text-muted-foreground max-w-[220px] leading-tight">
           {description}
         </p>
         {ctaLabel && (ctaHref || onCtaClick) && (
@@ -81,16 +81,16 @@ export function EmptyState({
         {/* Background glow */}
         <div className="absolute inset-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl" />
 
-        <div className="relative w-20 h-20 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-center">
-          <Icon className="w-8 h-8 text-slate-500" />
+        <div className="relative w-20 h-20 rounded-2xl bg-card/80 border border-border flex items-center justify-center">
+          <Icon className="w-8 h-8 text-muted-foreground" />
         </div>
       </div>
 
       {/* Title */}
-      <h2 className="text-xl font-bold text-white mb-2">{title}</h2>
+      <h2 className="text-xl font-bold text-foreground mb-2">{title}</h2>
 
       {/* Description */}
-      <p className="text-sm text-slate-400 max-w-sm leading-relaxed mb-6">
+      <p className="text-sm text-muted-foreground max-w-sm leading-relaxed mb-6">
         {description}
       </p>
 
@@ -114,7 +114,7 @@ export function EmptyState({
             key={i}
             className={cn(
               "w-1.5 h-1.5 rounded-full",
-              i === 1 ? "bg-emerald-500/40" : "bg-slate-700"
+              i === 1 ? "bg-emerald-500/40" : "bg-muted-foreground/30"
             )}
           />
         ))}

@@ -65,13 +65,13 @@ function TransactionSkeleton() {
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="flex items-center justify-between p-3 rounded-xl animate-pulse">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-800/80" />
+            <div className="w-9 h-9 rounded-xl" style={{ background: "var(--skeleton)" }} />
             <div>
-              <div className="w-32 h-3.5 rounded bg-slate-800/80 mb-1.5" />
-              <div className="w-24 h-2.5 rounded bg-slate-800/60" />
+              <div className="w-32 h-3.5 rounded mb-1.5" style={{ background: "var(--skeleton)" }} />
+              <div className="w-24 h-2.5 rounded" style={{ background: "var(--skeleton-soft)" }} />
             </div>
           </div>
-          <div className="w-16 h-4 rounded bg-slate-800/80" />
+          <div className="w-16 h-4 rounded" style={{ background: "var(--skeleton)" }} />
         </div>
       ))}
     </div>
@@ -100,11 +100,11 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
   const count = transactions?.length ?? 0;
 
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl">
+    <div className="p-5 rounded-2xl border border-border backdrop-blur-xl" style={{ background: "var(--surface)" }}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-white">Recent Transactions</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h3 className="text-sm font-semibold text-foreground">Recent Transactions</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {isLoading ? "Loading..." : `${count} recent transaction${count !== 1 ? "s" : ""}`}
           </p>
         </div>
@@ -130,7 +130,7 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
             return (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/40 transition-colors group/tx cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-secondary/40 transition-colors group/tx cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={cn("p-2 rounded-xl shrink-0 border border-transparent", catConfig.bgColor, catConfig.iconColor)}>
@@ -138,12 +138,12 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-white truncate">{tx.title}</span>
+                      <span className="text-sm font-medium text-foreground truncate">{tx.title}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-slate-500">{tx.category}</span>
-                      <span className="text-slate-700">•</span>
-                      <span className="text-[11px] text-slate-500">{formatTransactionDate(tx.date)}</span>
+                      <span className="text-[11px] text-muted-foreground">{tx.category}</span>
+                      <span className="text-muted-foreground/40">•</span>
+                      <span className="text-[11px] text-muted-foreground">{formatTransactionDate(tx.date)}</span>
                     </div>
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
                   <div className="text-right">
                     <p className={cn(
                       "text-sm font-semibold",
-                      tx.type === "income" ? "text-emerald-400" : "text-white"
+                      tx.type === "income" ? "text-emerald-400" : "text-foreground"
                     )}>
                       {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
                     </p>

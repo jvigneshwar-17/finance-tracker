@@ -55,7 +55,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-4 py-5 border-b border-border">
         <Link
           href="/dashboard"
           className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-xl p-1 -m-1"
@@ -65,7 +65,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <TrendingUp className="w-4.5 h-4.5 stroke-[2.5]" />
           </div>
           {!isCollapsed && (
-            <span className="text-lg font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors whitespace-nowrap">
+            <span className="text-lg font-bold tracking-tight text-foreground group-hover:text-emerald-400 transition-colors whitespace-nowrap">
               ExpenseFlow
             </span>
           )}
@@ -74,7 +74,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {/* Desktop collapse toggle */}
         <button
           onClick={toggle}
-          className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+          className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
@@ -104,7 +104,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 "focus:outline-none focus:ring-2 focus:ring-emerald-500/40",
                 isActive
                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/10"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent",
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60 border border-transparent",
                 isCollapsed && "justify-center px-2"
               )}
               aria-current={isActive ? "page" : undefined}
@@ -113,7 +113,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               <Icon
                 className={cn(
                   "w-[18px] h-[18px] shrink-0 transition-colors",
-                  isActive ? "text-emerald-400" : "text-slate-500 group-hover:text-slate-300"
+                  isActive ? "text-emerald-400" : "text-muted-foreground/70 group-hover:text-foreground/70"
                 )}
               />
               {!isCollapsed && <span>{item.label}</span>}
@@ -128,19 +128,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       {/* Logout */}
-      <div className="px-3 py-4 border-t border-white/[0.06]">
+      <div className="px-3 py-4 border-t border-border">
         <button
           onClick={handleLogout}
           className={cn(
             "group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-            "text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20",
+            "text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20",
             "focus:outline-none focus:ring-2 focus:ring-red-500/40",
             isCollapsed && "justify-center px-2"
           )}
           title={isCollapsed ? "Logout" : undefined}
           aria-label="Logout"
         >
-          <LogOut className="w-[18px] h-[18px] shrink-0 text-slate-500 group-hover:text-red-400 transition-colors" />
+          <LogOut className="w-[18px] h-[18px] shrink-0 text-muted-foreground/70 group-hover:text-red-400 transition-colors" />
           {!isCollapsed && <span>Logout</span>}
         </button>
       </div>
@@ -157,10 +157,11 @@ export function Sidebar() {
       <aside
         className={cn(
           "hidden md:flex flex-col fixed top-0 left-0 h-screen z-40",
-          "bg-[#0a0f1a]/95 backdrop-blur-2xl border-r border-white/[0.06]",
+          "backdrop-blur-2xl border-r border-border",
           "transition-all duration-300 ease-in-out",
           isCollapsed ? "w-[68px]" : "w-[256px]"
         )}
+        style={{ background: "var(--sidebar-bg)" }}
         aria-label="Main sidebar"
       >
         <SidebarContent />
@@ -176,7 +177,8 @@ export function Sidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-50 backdrop-blur-sm md:hidden"
+              style={{ background: "var(--overlay-bg)" }}
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
@@ -187,13 +189,14 @@ export function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 h-screen w-[280px] z-50 md:hidden bg-[#0a0f1a]/98 backdrop-blur-2xl border-r border-white/[0.06] shadow-2xl shadow-black/80"
+              className="fixed top-0 left-0 h-screen w-[280px] z-50 md:hidden backdrop-blur-2xl border-r border-border shadow-2xl shadow-black/40"
+              style={{ background: "var(--sidebar-bg-mobile)" }}
               aria-label="Mobile navigation"
             >
               {/* Close button */}
               <button
                 onClick={() => setMobileOpen(false)}
-                className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40 z-10"
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40 z-10"
                 aria-label="Close navigation menu"
               >
                 <X className="w-5 h-5" />
