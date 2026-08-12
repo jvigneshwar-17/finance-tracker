@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { TrendingUp, Mail, Heart } from "lucide-react";
+import { TrendingUp, Mail } from "lucide-react";
 
 // Custom SVG Icons for Brand Logos
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -136,15 +136,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Divider Bar */}
-        <div className="pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div>
-            © 2026 ExpenseFlow. All rights reserved.
-          </div>
-          <div className="flex items-center gap-1 text-slate-400">
-            <span>Made with</span>
-            <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500 inline mx-0.5" />
-            <span>using Next.js, TypeScript, Tailwind CSS and shadcn/ui.</span>
-          </div>
+        <div className="pt-8 border-t border-slate-800/60 text-center sm:text-left text-xs text-slate-500">
+          <p>© 2026 ExpenseFlow. All rights reserved.</p>
         </div>
 
       </div>
