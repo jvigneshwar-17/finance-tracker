@@ -47,7 +47,12 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId: _, ...transactionData } = transaction;
 
-    return NextResponse.json({ transaction: transactionData }, { status: 200 });
+    const serializedTransaction = {
+      ...transactionData,
+      amount: Number(transactionData.amount),
+    };
+
+    return NextResponse.json({ transaction: serializedTransaction }, { status: 200 });
   } catch (error) {
     console.error("[TRANSACTION_GET_ERROR]", error);
     return NextResponse.json(
@@ -134,8 +139,13 @@ export async function PATCH(
       },
     });
 
+    const serializedTransaction = {
+      ...transaction,
+      amount: Number(transaction.amount),
+    };
+
     return NextResponse.json(
-      { message: "Transaction updated successfully", transaction },
+      { message: "Transaction updated successfully", transaction: serializedTransaction },
       { status: 200 }
     );
   } catch (error) {

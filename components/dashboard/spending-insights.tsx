@@ -33,7 +33,7 @@ const item = {
 };
 
 function formatAmount(n: number): string {
-  return "₹" + Math.abs(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  return "₹" + Math.abs(n).toLocaleString("en-IN", { maximumFractionDigits: 2 });
 }
 
 export function SpendingInsights() {

@@ -67,8 +67,13 @@ export async function PATCH(
       },
     });
 
+    const serializedBudget = {
+      ...budget,
+      amount: Number(budget.amount),
+    };
+
     return NextResponse.json(
-      { message: "Budget updated successfully", budget },
+      { message: "Budget updated successfully", budget: serializedBudget },
       { status: 200 }
     );
   } catch (error) {

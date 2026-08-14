@@ -28,7 +28,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json({ budgets }, { status: 200 });
+    const serializedBudgets = budgets.map((b) => ({
+      ...b,
+      amount: Number(b.amount),
+    }));
+
+    return NextResponse.json({ budgets: serializedBudgets }, { status: 200 });
   } catch (error) {
     console.error("[BUDGETS_LIST_ERROR]", error);
     const message = error instanceof Error ? error.message : "Failed to fetch budgets";
@@ -105,8 +110,13 @@ export async function POST(request: Request) {
       },
     });
 
+    const serializedBudget = {
+      ...budget,
+      amount: Number(budget.amount),
+    };
+
     return NextResponse.json(
-      { message: "Budget created successfully", budget },
+      { message: "Budget created successfully", budget: serializedBudget },
       { status: 201 }
     );
   } catch (error) {

@@ -105,9 +105,14 @@ export async function GET(request: NextRequest) {
       db.transaction.count({ where }),
     ]);
 
+    const serializedTransactions = transactions.map((tx) => ({
+      ...tx,
+      amount: Number(tx.amount),
+    }));
+
     return NextResponse.json(
       {
-        transactions,
+        transactions: serializedTransactions,
         pagination: {
           page,
           limit,
@@ -176,8 +181,13 @@ export async function POST(request: Request) {
       },
     });
 
+    const serializedTransaction = {
+      ...transaction,
+      amount: Number(transaction.amount),
+    };
+
     return NextResponse.json(
-      { message: "Transaction created successfully", transaction },
+      { message: "Transaction created successfully", transaction: serializedTransaction },
       { status: 201 }
     );
   } catch (error) {

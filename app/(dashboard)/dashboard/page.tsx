@@ -55,7 +55,7 @@ function formatDate(): string {
 }
 
 function formatAmount(n: number): string {
-  return "₹" + n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  return "₹" + n.toLocaleString("en-IN", { maximumFractionDigits: 2 });
 }
 
 export default function DashboardPage() {
