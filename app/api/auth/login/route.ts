@@ -44,6 +44,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check email verification status from database
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        {
+          error: "Please verify your email address before logging in.",
+          code: "EMAIL_VERIFICATION_REQUIRED",
+        },
+        { status: 403 }
+      );
+    }
+
     // Generate JWT and set cookie
     const token = await generateToken({ userId: user.id, email: user.email });
     await setAuthCookie(token);

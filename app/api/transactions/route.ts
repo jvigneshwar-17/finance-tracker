@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { getAuthFromCookies } from "@/lib/auth";
+import { requireVerifiedAuth } from "@/lib/auth";
 import {
   createTransactionSchema,
   transactionQuerySchema,
@@ -11,12 +11,12 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     // Build where clause
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: Record<string, any> = {
-      userId: payload.userId,
+      userId: auth.userId,
     };
 
     if (type) {
@@ -135,12 +135,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
@@ -166,7 +166,7 @@ export async function POST(request: Request) {
         category,
         note: note || null,
         date: new Date(date),
-        userId: payload.userId,
+        userId: auth.userId,
       },
       select: {
         id: true,

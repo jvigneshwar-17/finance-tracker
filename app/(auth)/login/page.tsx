@@ -45,6 +45,11 @@ export default function LoginPage() {
       const result = await response.json();
 
       if (!response.ok) {
+        if (response.status === 403 && result.code === "EMAIL_VERIFICATION_REQUIRED") {
+          toast.error(result.error || "Please verify your email before logging in.");
+          router.push("/verify-email");
+          return;
+        }
         toast.error(result.error || "Invalid credentials");
         return;
       }

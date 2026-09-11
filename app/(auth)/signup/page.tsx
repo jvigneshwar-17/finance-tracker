@@ -54,8 +54,10 @@ export default function SignUpPage() {
         return;
       }
 
-      toast.success("Account created successfully!");
-      router.push("/dashboard");
+      toast.success(
+        result.message || "Account created! Please check your email to verify your account."
+      );
+      router.push("/verify-email");
       router.refresh();
     } catch {
       toast.error("Network error. Please try again.");

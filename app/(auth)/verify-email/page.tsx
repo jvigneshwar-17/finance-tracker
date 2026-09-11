@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { AuthCard } from "@/components/auth/auth-card";
@@ -56,6 +56,8 @@ function VerifyEmailContent() {
           ? "Verifying your email..."
           : state === "success"
           ? "Email verified!"
+          : state === "no-token"
+          ? "Check your email"
           : "Verification failed"
       }
       subtitle={
@@ -63,6 +65,8 @@ function VerifyEmailContent() {
           ? "Please wait while we verify your email address"
           : state === "success"
           ? "Your email has been successfully verified"
+          : state === "no-token"
+          ? "Please click the verification link sent to your inbox to activate your account."
           : "We couldn't verify your email address"
       }
       footer={
@@ -95,7 +99,17 @@ function VerifyEmailContent() {
           </motion.div>
         )}
 
-        {(state === "error" || state === "no-token") && (
+        {state === "no-token" && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+          >
+            <Mail className="w-7 h-7 text-emerald-400" />
+          </motion.div>
+        )}
+
+        {state === "error" && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}

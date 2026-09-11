@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getAuthFromCookies } from "@/lib/auth";
+import { requireVerifiedAuth } from "@/lib/auth";
 import { createBudgetSchema } from "@/lib/validations/budget";
 
 // ─── GET /api/budgets — List user budgets ────────────────────────────
 
 export async function GET() {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
     const budgets = await db.budget.findMany({
-      where: { userId: payload.userId },
+      where: { userId: auth.userId },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -48,12 +48,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     // Check for duplicate category budget using findFirst for robust querying
     const existing = await db.budget.findFirst({
       where: {
-        userId: payload.userId,
+        userId: auth.userId,
         category,
       },
     });
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       data: {
         category,
         amount,
-        userId: payload.userId,
+        userId: auth.userId,
       },
       select: {
         id: true,

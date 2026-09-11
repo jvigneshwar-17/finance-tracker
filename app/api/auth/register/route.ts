@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import {
   hashPassword,
-  generateToken,
-  setAuthCookie,
   generateSecureToken,
   hashToken,
 } from "@/lib/auth";
@@ -62,16 +60,17 @@ export async function POST(request: Request) {
       },
     });
 
-    // Generate JWT and set cookie
-    const token = await generateToken({ userId: user.id, email: user.email });
-    await setAuthCookie(token);
-
     // Email integration point — send verification email here
     // NOTE: Token is intentionally NOT logged to prevent exposure in production logs
     console.info(`[EMAIL VERIFICATION] Verification email requested for ${email}`);
 
     return NextResponse.json(
-      { message: "Account created successfully", user },
+      {
+        message:
+          "Account created successfully. Please check your email to verify your account before logging in.",
+        user,
+        requiresVerification: true,
+      },
       { status: 201 }
     );
   } catch (error) {

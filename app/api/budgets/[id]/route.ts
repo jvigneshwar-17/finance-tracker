@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getAuthFromCookies } from "@/lib/auth";
+import { requireVerifiedAuth } from "@/lib/auth";
 import { updateBudgetSchema } from "@/lib/validations/budget";
 
 // ─── PATCH /api/budgets/[id] — Update budget ────────────────────────
@@ -10,12 +10,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
@@ -27,7 +27,7 @@ export async function PATCH(
       select: { userId: true },
     });
 
-    if (!existing || existing.userId !== payload.userId) {
+    if (!existing || existing.userId !== auth.userId) {
       return NextResponse.json(
         { error: "Budget not found" },
         { status: 404 }
@@ -93,12 +93,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const payload = await getAuthFromCookies();
+    const auth = await requireVerifiedAuth();
 
-    if (!payload) {
+    if (!auth.success) {
       return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
+        { error: auth.error, ...(auth.code && { code: auth.code }) },
+        { status: auth.status }
       );
     }
 
@@ -110,7 +110,7 @@ export async function DELETE(
       select: { userId: true },
     });
 
-    if (!existing || existing.userId !== payload.userId) {
+    if (!existing || existing.userId !== auth.userId) {
       return NextResponse.json(
         { error: "Budget not found" },
         { status: 404 }

@@ -1,6 +1,9 @@
 import { hash, compare } from "bcryptjs";
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { db } from "@/lib/db";
+import { verifyToken, type JwtPayload } from "./jwt";
+
+export { generateToken, verifyToken, type JwtPayload } from "./jwt";
 
 const SALT_ROUNDS = 12;
 const COOKIE_NAME = "auth-token";
@@ -16,40 +19,6 @@ export async function verifyPassword(
   hashedPassword: string
 ): Promise<boolean> {
   return compare(password, hashedPassword);
-}
-
-// ─── JWT Token Management ────────────────────────────────────────────
-
-function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error("JWT_SECRET environment variable is not set");
-  }
-  return new TextEncoder().encode(secret);
-}
-
-export interface JwtPayload {
-  userId: string;
-  email: string;
-}
-
-export async function generateToken(payload: JwtPayload): Promise<string> {
-  const expiresIn = process.env.JWT_EXPIRES_IN || "7d";
-
-  return new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(expiresIn)
-    .sign(getJwtSecret());
-}
-
-export async function verifyToken(token: string): Promise<JwtPayload | null> {
-  try {
-    const { payload } = await jwtVerify(token, getJwtSecret());
-    return payload as unknown as JwtPayload;
-  } catch {
-    return null;
-  }
 }
 
 // ─── Cookie Management ───────────────────────────────────────────────
@@ -83,6 +52,41 @@ export async function getAuthFromCookies(): Promise<JwtPayload | null> {
   if (!token) return null;
 
   return verifyToken(token);
+}
+
+export type VerifiedAuthResult =
+  | { success: true; userId: string; email: string }
+  | { success: false; status: 401 | 403; error: string; code?: string };
+
+/**
+ * Validates session token and checks email verification status directly against
+ * the database (JWT contains only identity information).
+ */
+export async function requireVerifiedAuth(): Promise<VerifiedAuthResult> {
+  const payload = await getAuthFromCookies();
+  if (!payload) {
+    return { success: false, status: 401, error: "Not authenticated" };
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: payload.userId },
+    select: { id: true, email: true, emailVerified: true },
+  });
+
+  if (!user) {
+    return { success: false, status: 401, error: "User not found" };
+  }
+
+  if (!user.emailVerified) {
+    return {
+      success: false,
+      status: 403,
+      error: "Please verify your email address before accessing this resource.",
+      code: "EMAIL_VERIFICATION_REQUIRED",
+    };
+  }
+
+  return { success: true, userId: user.id, email: user.email };
 }
 
 // ─── Token Generation & Hashing for Reset / Verification ─────────────
