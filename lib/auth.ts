@@ -85,10 +85,6 @@ export async function getAuthFromCookies(): Promise<JwtPayload | null> {
   return verifyToken(token);
 }
 
-// ─── Token Generation for Reset / Verification ──────────────────────
+// ─── Token Generation & Hashing for Reset / Verification ─────────────
 
-export function generateSecureToken(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
-}
+export { generateSecureToken, hashToken } from "./tokens";

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { generateSecureToken } from "@/lib/auth";
+import { generateSecureToken, hashToken } from "@/lib/auth";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
@@ -26,12 +26,13 @@ export async function POST(request: Request) {
     if (user) {
       // Generate reset token with 1 hour expiry
       const resetToken = generateSecureToken();
+      const resetTokenHash = hashToken(resetToken);
       const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
       await db.user.update({
         where: { id: user.id },
         data: {
-          passwordResetToken: resetToken,
+          passwordResetTokenHash: resetTokenHash,
           passwordResetExpires: resetExpires,
         },
       });

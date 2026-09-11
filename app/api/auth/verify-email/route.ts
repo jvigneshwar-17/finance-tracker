@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { hashToken } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -13,10 +14,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Find user with matching verification token
+    // Hash the incoming token before looking up in database
+    const tokenHash = hashToken(token);
+
+    // Find user with matching verification token hash
     const user = await db.user.findFirst({
       where: {
-        emailVerificationToken: token,
+        emailVerificationTokenHash: tokenHash,
       },
     });
 
@@ -34,12 +38,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Mark email as verified and clear token
+    // Mark email as verified and clear token hash (enforce single-use)
     await db.user.update({
       where: { id: user.id },
       data: {
         emailVerified: true,
-        emailVerificationToken: null,
+        emailVerificationTokenHash: null,
       },
     });
 

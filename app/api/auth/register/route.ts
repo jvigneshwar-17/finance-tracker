@@ -5,6 +5,7 @@ import {
   generateToken,
   setAuthCookie,
   generateSecureToken,
+  hashToken,
 } from "@/lib/auth";
 import { signUpSchema } from "@/lib/validations/auth";
 
@@ -39,13 +40,14 @@ export async function POST(request: Request) {
     // Hash password and create user
     const hashedPassword = await hashPassword(password);
     const emailVerificationToken = generateSecureToken();
+    const emailVerificationTokenHash = hashToken(emailVerificationToken);
 
     const user = await db.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        emailVerificationToken,
+        emailVerificationTokenHash,
       },
       select: {
         id: true,

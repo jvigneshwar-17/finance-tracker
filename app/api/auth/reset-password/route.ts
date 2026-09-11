@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, hashToken } from "@/lib/auth";
 import { resetPasswordSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
@@ -19,10 +19,13 @@ export async function POST(request: Request) {
 
     const { token, password } = result.data;
 
-    // Find user with valid non-expired token
+    // Hash the incoming token before looking up in database
+    const tokenHash = hashToken(token);
+
+    // Find user with valid non-expired token hash
     const user = await db.user.findFirst({
       where: {
-        passwordResetToken: token,
+        passwordResetTokenHash: tokenHash,
         passwordResetExpires: {
           gt: new Date(),
         },
@@ -39,11 +42,12 @@ export async function POST(request: Request) {
     // Hash new password and update user
     const hashedPassword = await hashPassword(password);
 
+    // Clear token hash and expiration (enforce single-use)
     await db.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
-        passwordResetToken: null,
+        passwordResetTokenHash: null,
         passwordResetExpires: null,
       },
     });
