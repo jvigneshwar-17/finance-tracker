@@ -7,13 +7,15 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test tests/tokens.test.ts tests/email-verification.test.ts",
+    "test": "node --test tests/tokens.test.ts tests/email-verification.test.ts tests/ratelimit.test.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.4",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.43.0",

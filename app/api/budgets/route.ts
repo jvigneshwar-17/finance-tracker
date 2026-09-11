@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireVerifiedAuth } from "@/lib/auth";
 import { createBudgetSchema } from "@/lib/validations/budget";
+import { budgetsWriteLimiter, rateLimitResponse } from "@/lib/ratelimit";
 
 // ─── GET /api/budgets — List user budgets ────────────────────────────
 
@@ -55,6 +56,12 @@ export async function POST(request: Request) {
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 30 writes / 1 min per authenticated user
+    const rateLimit = await budgetsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     let body;

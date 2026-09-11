@@ -6,9 +6,21 @@ import {
   hashToken,
 } from "@/lib/auth";
 import { signUpSchema } from "@/lib/validations/auth";
+import {
+  getClientIp,
+  registerLimiter,
+  rateLimitResponse,
+} from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 5 registrations / 1 hour per IP
+    const clientIp = getClientIp(request);
+    const rateLimit = await registerLimiter.check(clientIp);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
+
     const body = await request.json();
 
     // Validate input

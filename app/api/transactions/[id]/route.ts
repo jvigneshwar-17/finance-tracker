@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireVerifiedAuth } from "@/lib/auth";
 import { updateTransactionSchema } from "@/lib/validations/transaction";
+import { transactionsWriteLimiter, rateLimitResponse } from "@/lib/ratelimit";
 
 // ─── GET /api/transactions/[id] — Get single transaction ────────────
 
@@ -76,6 +77,12 @@ export async function PATCH(
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 60 writes / 1 min per authenticated user
+    const rateLimit = await transactionsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const { id } = await params;
@@ -171,6 +178,12 @@ export async function DELETE(
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 60 writes / 1 min per authenticated user
+    const rateLimit = await transactionsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const { id } = await params;

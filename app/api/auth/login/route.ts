@@ -6,6 +6,12 @@ import {
   setAuthCookie,
 } from "@/lib/auth";
 import { loginSchema } from "@/lib/validations/auth";
+import {
+  getClientIp,
+  normalizeEmail,
+  loginLimiter,
+  rateLimitResponse,
+} from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
@@ -22,6 +28,14 @@ export async function POST(request: Request) {
     }
 
     const { email, password } = result.data;
+
+    // Rate limiting: 5 attempts / 15 min per IP + normalized email
+    const clientIp = getClientIp(request);
+    const normalized = normalizeEmail(email);
+    const rateLimit = await loginLimiter.check(`${clientIp}:${normalized}`);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
 
     // Find user
     const user = await db.user.findUnique({

@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateSecureToken, hashToken } from "@/lib/auth";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
+import {
+  getClientIp,
+  normalizeEmail,
+  forgotPasswordLimiter,
+  rateLimitResponse,
+} from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
@@ -17,6 +23,14 @@ export async function POST(request: Request) {
     }
 
     const { email } = result.data;
+
+    // Rate limiting: 3 requests / 15 min per IP + normalized email
+    const clientIp = getClientIp(request);
+    const normalized = normalizeEmail(email);
+    const rateLimit = await forgotPasswordLimiter.check(`${clientIp}:${normalized}`);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
 
     // Find user (don't reveal whether user exists)
     const user = await db.user.findUnique({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireVerifiedAuth } from "@/lib/auth";
 import { updateBudgetSchema } from "@/lib/validations/budget";
+import { budgetsWriteLimiter, rateLimitResponse } from "@/lib/ratelimit";
 
 // ─── PATCH /api/budgets/[id] — Update budget ────────────────────────
 
@@ -17,6 +18,12 @@ export async function PATCH(
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 30 writes / 1 min per authenticated user
+    const rateLimit = await budgetsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const { id } = await params;
@@ -100,6 +107,12 @@ export async function DELETE(
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 30 writes / 1 min per authenticated user
+    const rateLimit = await budgetsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const { id } = await params;

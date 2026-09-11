@@ -6,6 +6,7 @@ import {
   createTransactionSchema,
   transactionQuerySchema,
 } from "@/lib/validations/transaction";
+import { transactionsWriteLimiter, rateLimitResponse } from "@/lib/ratelimit";
 
 // ─── GET /api/transactions — List transactions ──────────────────────
 
@@ -142,6 +143,12 @@ export async function POST(request: Request) {
         { error: auth.error, ...(auth.code && { code: auth.code }) },
         { status: auth.status }
       );
+    }
+
+    // Rate limiting: 60 writes / 1 min per authenticated user
+    const rateLimit = await transactionsWriteLimiter.check(auth.userId);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const body = await request.json();

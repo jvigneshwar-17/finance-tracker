@@ -2,9 +2,21 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hashPassword, hashToken } from "@/lib/auth";
 import { resetPasswordSchema } from "@/lib/validations/auth";
+import {
+  getClientIp,
+  resetPasswordLimiter,
+  rateLimitResponse,
+} from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 5 attempts / 15 min per IP
+    const clientIp = getClientIp(request);
+    const rateLimit = await resetPasswordLimiter.check(clientIp);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
+
     const body = await request.json();
 
     // Validate input

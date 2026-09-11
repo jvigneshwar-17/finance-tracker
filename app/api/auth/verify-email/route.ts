@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hashToken } from "@/lib/auth";
+import {
+  getClientIp,
+  verifyEmailLimiter,
+  rateLimitResponse,
+} from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 10 attempts / 15 min per IP
+    const clientIp = getClientIp(request);
+    const rateLimit = await verifyEmailLimiter.check(clientIp);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
+
     const body = await request.json();
     const { token } = body;
 
