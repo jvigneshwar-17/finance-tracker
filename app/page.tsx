@@ -1,45 +1,61 @@
 import { Navbar } from "@/components/navbar";
-import { Hero } from "@/components/Hero";
-import { Features } from "@/components/Features";
-import { HowItWorks } from "@/components/HowItWorks";
-import { Testimonials } from "@/components/Testimonials";
-import { Pricing } from "@/components/Pricing";
-import { FAQ } from "@/components/FAQ";
-import { CTA } from "@/components/CTA";
-import { Footer } from "@/components/Footer";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { ValuePillarsBar } from "@/components/landing/ValuePillarsBar";
+import { CoreCapabilitiesGrid } from "@/components/landing/CoreCapabilitiesGrid";
+import { ExpenseShowcase } from "@/components/landing/ExpenseShowcase";
+import { BudgetShowcase } from "@/components/landing/BudgetShowcase";
+import { AnalyticsShowcase } from "@/components/landing/AnalyticsShowcase";
+import { SavingsGoalsShowcase } from "@/components/landing/SavingsGoalsShowcase";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
+import { SecurityArchitecture } from "@/components/landing/SecurityArchitecture";
+import { FAQAccordion } from "@/components/landing/FAQAccordion";
+import { BottomCTA } from "@/components/landing/BottomCTA";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 flex flex-col justify-between">
-      {/* Sticky Navbar */}
+    <div className="min-h-screen bg-[#07090E] text-slate-100 selection:bg-[#00F0FF] selection:text-[#07090E] flex flex-col justify-between overflow-x-hidden">
+      {/* 1. Sticky Navigation */}
       <Navbar />
 
-      {/* Main Content */}
+      {/* Main Page Flow */}
       <main className="flex-1">
-        {/* Hero Section */}
-        <Hero />
+        {/* 2. Hero Section */}
+        <HeroSection />
 
-        {/* Features Section */}
-        <Features />
+        {/* 3. Product Value Pillars */}
+        <ValuePillarsBar />
 
-        {/* How It Works Section */}
-        <HowItWorks />
+        {/* 4. Core Capabilities (2x2 Grid) */}
+        <CoreCapabilitiesGrid />
 
-        {/* Testimonials Section */}
-        <Testimonials />
+        {/* 5. Expense Tracking Showcase */}
+        <ExpenseShowcase />
 
-        {/* Pricing Section */}
-        <Pricing />
+        {/* 6. Budget Management Showcase */}
+        <BudgetShowcase />
 
-        {/* FAQ Section */}
-        <FAQ />
+        {/* 7. Analytics & Cash Flow Showcase */}
+        <AnalyticsShowcase />
 
-        {/* CTA Section */}
-        <CTA />
+        {/* 8. Savings Goals Showcase */}
+        <SavingsGoalsShowcase />
+
+        {/* 9. How ExpenseFlow Works */}
+        <HowItWorksSection />
+
+        {/* 10. Security Architecture */}
+        <SecurityArchitecture />
+
+        {/* 11. FAQ Accordion */}
+        <FAQAccordion />
+
+        {/* 12. Final Call to Action */}
+        <BottomCTA />
       </main>
 
-      {/* Footer Section */}
-      <Footer />
+      {/* 13. Institutional Footer */}
+      <LandingFooter />
     </div>
   );
 }
