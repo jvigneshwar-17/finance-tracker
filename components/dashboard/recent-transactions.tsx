@@ -61,17 +61,17 @@ function formatTransactionDate(dateStr: string): string {
 
 function TransactionSkeleton() {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between p-3 rounded-xl animate-pulse">
+        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] animate-pulse">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl" style={{ background: "var(--skeleton)" }} />
+            <div className="w-9 h-9 rounded-xl bg-white/[0.06]" />
             <div>
-              <div className="w-32 h-3.5 rounded mb-1.5" style={{ background: "var(--skeleton)" }} />
-              <div className="w-24 h-2.5 rounded" style={{ background: "var(--skeleton-soft)" }} />
+              <div className="w-32 h-3.5 rounded bg-white/[0.05] mb-1.5" />
+              <div className="w-24 h-2.5 rounded bg-white/[0.03]" />
             </div>
           </div>
-          <div className="w-16 h-4 rounded" style={{ background: "var(--skeleton)" }} />
+          <div className="w-16 h-4 rounded bg-white/[0.06]" />
         </div>
       ))}
     </div>
@@ -85,7 +85,7 @@ function TransactionsEmpty({ onAdd }: { onAdd?: () => void }) {
     <EmptyState
       icon={ArrowLeftRight}
       title="No Transactions Yet"
-      description="Add your first transaction to get started."
+      description="Add your first transaction to view your real-time cash flow."
       ctaLabel="+ Add Transaction"
       onCtaClick={onAdd}
       compact
@@ -100,17 +100,20 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
   const count = transactions?.length ?? 0;
 
   return (
-    <div className="p-5 rounded-2xl border border-border backdrop-blur-xl" style={{ background: "var(--surface)" }}>
-      <div className="flex items-center justify-between mb-4">
+    <div className="p-5 sm:p-6 rounded-2xl glass-fintech border border-white/[0.08] relative overflow-hidden">
+      {/* Top subtle glare */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Recent Transactions</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {isLoading ? "Loading..." : `${count} recent transaction${count !== 1 ? "s" : ""}`}
+          <h3 className="text-sm font-bold text-white font-heading tracking-wide">Recent Transactions</h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {isLoading ? "Loading records..." : `${count} recorded entry${count !== 1 ? "ies" : ""}`}
           </p>
         </div>
         <Link
           href="/dashboard/transactions"
-          className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors group"
+          className="flex items-center gap-1.5 text-xs text-[#00F0FF] hover:text-[#3bf4ff] font-semibold transition-colors group focus:outline-none focus-visible:underline"
         >
           <span>View All</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -122,51 +125,58 @@ export function RecentTransactions({ transactions, isLoading, onAdd }: RecentTra
       ) : !hasData ? (
         <TransactionsEmpty onAdd={onAdd} />
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {transactions.map((tx) => {
             const catConfig = getCategoryConfig(tx.category);
             const Icon = catConfig.icon;
+            const isIncome = tx.type === "income";
 
             return (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-secondary/40 transition-colors group/tx cursor-pointer"
+                className="flex items-center justify-between p-3 sm:p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.08] transition-all group/tx"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className={cn("p-2 rounded-xl shrink-0 border border-transparent", catConfig.bgColor, catConfig.iconColor)}>
+                  <div className={cn("p-2 rounded-xl shrink-0 border border-white/[0.06]", catConfig.bgColor, catConfig.iconColor)}>
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground truncate">{tx.title}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-white truncate font-heading group-hover/tx:text-[#00F0FF] transition-colors">
+                        {tx.title}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-muted-foreground">{tx.category}</span>
-                      <span className="text-muted-foreground/40">•</span>
-                      <span className="text-[11px] text-muted-foreground">{formatTransactionDate(tx.date)}</span>
+                      <span className="text-[11px] text-slate-400">{tx.category}</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="text-[11px] text-slate-400 font-telemetry">{formatTransactionDate(tx.date)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 ml-3">
+                <div className="flex items-center gap-2.5 shrink-0 ml-3">
                   <div className="text-right">
-                    <p className={cn(
-                      "text-sm font-semibold",
-                      tx.type === "income" ? "text-emerald-400" : "text-foreground"
-                    )}>
-                      {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
+                    <p
+                      className={cn(
+                        "text-xs sm:text-sm font-bold font-telemetry tnum",
+                        isIncome ? "text-emerald-400" : "text-white"
+                      )}
+                    >
+                      {isIncome ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
                     </p>
                   </div>
-                  <div className={cn(
-                    "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider",
-                    tx.type === "income"
-                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                      : "bg-red-500/10 text-red-400 border border-red-500/20"
-                  )}>
-                    {tx.type === "income" ? (
-                      <ArrowDownLeft className="w-3 h-3" />
+                  <div
+                    className={cn(
+                      "p-1 rounded-md text-[10px] font-bold border",
+                      isIncome
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                    )}
+                  >
+                    {isIncome ? (
+                      <ArrowDownLeft className="w-3.5 h-3.5" />
                     ) : (
-                      <ArrowUpRight className="w-3 h-3" />
+                      <ArrowUpRight className="w-3.5 h-3.5" />
                     )}
                   </div>
                 </div>

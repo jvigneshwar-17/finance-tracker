@@ -225,9 +225,9 @@ export function normalizeEmail(email: string): string {
 }
 
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
+  const vercelIp = request.headers.get("x-vercel-ip");
+  if (vercelIp) {
+    return vercelIp.trim();
   }
   const realIp = request.headers.get("x-real-ip");
   if (realIp) {
@@ -236,6 +236,10 @@ export function getClientIp(request: Request): string {
   const cfConnectingIp = request.headers.get("cf-connecting-ip");
   if (cfConnectingIp) {
     return cfConnectingIp.trim();
+  }
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
   }
   return "127.0.0.1";
 }

@@ -11,13 +11,37 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#090d16] flex items-center justify-center px-4 py-12 sm:px-6 relative overflow-hidden">
-      {/* Ambient Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/8 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 sm:px-6 relative overflow-hidden"
+      style={{ background: "#07090E" }}
+    >
+      {/* Primary cyan ambient orb — top-center */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(0,240,255,0.06) 0%, transparent 65%)", filter: "blur(60px)" }}
+      />
+      {/* Violet accent — bottom-right */}
+      <div
+        className="absolute bottom-0 right-0 w-[500px] h-[400px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(121,40,202,0.06) 0%, transparent 70%)", filter: "blur(80px)" }}
+      />
+      {/* Subtle navy glow — top-left */}
+      <div
+        className="absolute top-0 left-0 w-[400px] h-[300px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(0,180,255,0.04) 0%, transparent 70%)", filter: "blur(80px)" }}
+      />
 
-      {children}
+      {/* Subtle grid texture */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.015]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      <div className="relative z-10 w-full">
+        {children}
+      </div>
     </div>
   );
 }

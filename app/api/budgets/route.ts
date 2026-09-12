@@ -37,9 +37,8 @@ export async function GET() {
     return NextResponse.json({ budgets: serializedBudgets }, { status: 200 });
   } catch (error) {
     console.error("[BUDGETS_LIST_ERROR]", error);
-    const message = error instanceof Error ? error.message : "Failed to fetch budgets";
     return NextResponse.json(
-      { error: message },
+      { error: "Something went wrong." },
       { status: 500 }
     );
   }
@@ -128,9 +127,14 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("[BUDGET_CREATE_ERROR]", error);
-    const message = error instanceof Error ? error.message : "Failed to create budget";
+    if ((error as { code?: string })?.code === "P2002") {
+      return NextResponse.json(
+        { error: "A budget for this category already exists. Edit it instead." },
+        { status: 409 }
+      );
+    }
     return NextResponse.json(
-      { error: message },
+      { error: "Something went wrong." },
       { status: 500 }
     );
   }

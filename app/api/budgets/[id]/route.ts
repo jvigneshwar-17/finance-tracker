@@ -85,9 +85,8 @@ export async function PATCH(
     );
   } catch (error) {
     console.error("[BUDGET_UPDATE_ERROR]", error);
-    const message = error instanceof Error ? error.message : "Failed to update budget";
     return NextResponse.json(
-      { error: message },
+      { error: "Something went wrong." },
       { status: 500 }
     );
   }
@@ -140,9 +139,8 @@ export async function DELETE(
     );
   } catch (error) {
     console.error("[BUDGET_DELETE_ERROR]", error);
-    const message = error instanceof Error ? error.message : "Failed to delete budget";
     return NextResponse.json(
-      { error: message },
+      { error: "Something went wrong." },
       { status: 500 }
     );
   }

@@ -78,10 +78,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message:
-          "Account created successfully. Please check your email to verify your account before logging in.",
+        message: "Account created successfully. You can now log in.",
         user,
-        requiresVerification: true,
       },
       { status: 201 }
     );

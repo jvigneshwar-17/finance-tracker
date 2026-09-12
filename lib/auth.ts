@@ -77,15 +77,6 @@ export async function requireVerifiedAuth(): Promise<VerifiedAuthResult> {
     return { success: false, status: 401, error: "User not found" };
   }
 
-  if (!user.emailVerified) {
-    return {
-      success: false,
-      status: 403,
-      error: "Please verify your email address before accessing this resource.",
-      code: "EMAIL_VERIFICATION_REQUIRED",
-    };
-  }
-
   return { success: true, userId: user.id, email: user.email };
 }
 

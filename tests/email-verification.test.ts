@@ -46,20 +46,13 @@ describe("Email Verification Before Authentication", () => {
       if (!user.passwordMatch) {
         return { status: 401, error: "Invalid email or password" };
       }
-      if (!user.emailVerified) {
-        return {
-          status: 403,
-          error: "Please verify your email address before logging in.",
-          code: "EMAIL_VERIFICATION_REQUIRED",
-        };
-      }
       return { status: 200, message: "Login successful" };
     }
 
-    test("rejects unverified user with 403 EMAIL_VERIFICATION_REQUIRED", () => {
+    test("permits unverified user when credentials are valid", () => {
       const result = simulateLoginCheck({ emailVerified: false, passwordMatch: true });
-      assert.equal(result.status, 403);
-      assert.equal(result.code, "EMAIL_VERIFICATION_REQUIRED");
+      assert.equal(result.status, 200);
+      assert.equal(result.message, "Login successful");
     });
 
     test("accepts verified user with 200", () => {
@@ -68,27 +61,19 @@ describe("Email Verification Before Authentication", () => {
       assert.equal(result.message, "Login successful");
     });
 
-    test("rejects invalid password with 401 before checking verification", () => {
+    test("rejects invalid password with 401", () => {
       const result = simulateLoginCheck({ emailVerified: false, passwordMatch: false });
       assert.equal(result.status, 401);
     });
   });
 
-  describe("Financial Route Protection & Verification Guard", () => {
+  describe("Financial Route Protection & Authentication Guard", () => {
     function simulateFinancialRouteGuard(session: { userId: string } | null, dbUser: { id: string; emailVerified: boolean } | null) {
       if (!session) {
         return { success: false, status: 401, error: "Not authenticated" };
       }
       if (!dbUser) {
         return { success: false, status: 401, error: "User not found" };
-      }
-      if (!dbUser.emailVerified) {
-        return {
-          success: false,
-          status: 403,
-          error: "Please verify your email address before accessing this resource.",
-          code: "EMAIL_VERIFICATION_REQUIRED",
-        };
       }
       return { success: true, userId: dbUser.id };
     }
@@ -99,14 +84,13 @@ describe("Email Verification Before Authentication", () => {
       assert.equal(result.status, 401);
     });
 
-    test("rejects authenticated but unverified users with 403 EMAIL_VERIFICATION_REQUIRED", () => {
+    test("permits authenticated user regardless of emailVerified status", () => {
       const session = { userId: "user-unverified-789" };
       const dbUser = { id: "user-unverified-789", emailVerified: false };
 
       const result = simulateFinancialRouteGuard(session, dbUser);
-      assert.equal(result.success, false);
-      assert.equal(result.status, 403);
-      assert.equal(result.code, "EMAIL_VERIFICATION_REQUIRED");
+      assert.equal(result.success, true);
+      assert.equal(result.userId, "user-unverified-789");
     });
 
     test("permits authenticated and verified users", () => {

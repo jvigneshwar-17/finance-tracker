@@ -53,28 +53,32 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-border">
+    <div className="flex flex-col h-full bg-[#07090E]/95 backdrop-blur-2xl">
+      {/* Brand Logo Header */}
+      <div className="flex items-center justify-between px-4 py-5 border-b border-white/[0.06]">
         <Link
           href="/dashboard"
-          className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-xl p-1 -m-1"
+          className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50 rounded-xl p-1 -m-1"
           onClick={onNavigate}
         >
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 text-slate-950 font-bold shadow-lg shadow-emerald-500/25 shrink-0 group-hover:scale-105 transition-transform duration-200">
+          <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[#00F0FF] via-[#00D4E0] to-[#7928CA] text-[#07090E] font-bold shadow-md shadow-[#00F0FF]/20 shrink-0 group-hover:scale-105 transition-transform duration-200">
             <TrendingUp className="w-4.5 h-4.5 stroke-[2.5]" />
+            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#00F0FF] rounded-full animate-ping opacity-75" />
           </div>
           {!isCollapsed && (
-            <span className="text-lg font-bold tracking-tight text-foreground group-hover:text-emerald-400 transition-colors whitespace-nowrap">
-              ExpenseFlow
-            </span>
+            <div className="flex items-center gap-1.5 overflow-hidden">
+              <span className="font-heading text-lg font-bold tracking-tight text-white group-hover:text-[#00F0FF] transition-colors whitespace-nowrap">
+                ExpenseFlow
+              </span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#00F0FF]" />
+            </div>
           )}
         </Link>
 
         {/* Desktop collapse toggle */}
         <button
           onClick={toggle}
-          className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+          className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/[0.08] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
@@ -85,8 +89,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto sidebar-scrollbar" role="navigation" aria-label="Dashboard navigation">
+      {/* Navigation Section */}
+      <nav
+        className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto sidebar-scrollbar"
+        role="navigation"
+        aria-label="Dashboard navigation"
+      >
+        {!isCollapsed && (
+          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-heading">
+            Application
+          </div>
+        )}
+
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -101,10 +115,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               className={cn(
                 "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-emerald-500/40",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50",
                 isActive
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60 border border-transparent",
+                  ? "bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/25 shadow-sm shadow-[#00F0FF]/10 font-semibold"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.05] border border-transparent hover:border-white/[0.04]",
                 isCollapsed && "justify-center px-2"
               )}
               aria-current={isActive ? "page" : undefined}
@@ -113,35 +127,39 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               <Icon
                 className={cn(
                   "w-[18px] h-[18px] shrink-0 transition-colors",
-                  isActive ? "text-emerald-400" : "text-muted-foreground/70 group-hover:text-foreground/70"
+                  isActive
+                    ? "text-[#00F0FF]"
+                    : "text-slate-400 group-hover:text-white"
                 )}
               />
-              {!isCollapsed && <span>{item.label}</span>}
+              {!isCollapsed && (
+                <span className="truncate font-sans">{item.label}</span>
+              )}
 
-              {/* Active indicator bar */}
+              {/* Cyan active indicator pill */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-emerald-400" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#00F0FF] shadow-sm shadow-[#00F0FF]/80" />
               )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t border-border">
+      {/* Logout Action Footer */}
+      <div className="px-3 py-4 border-t border-white/[0.06]">
         <button
           onClick={handleLogout}
           className={cn(
             "group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-            "text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20",
-            "focus:outline-none focus:ring-2 focus:ring-red-500/40",
+            "text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40",
             isCollapsed && "justify-center px-2"
           )}
           title={isCollapsed ? "Logout" : undefined}
           aria-label="Logout"
         >
-          <LogOut className="w-[18px] h-[18px] shrink-0 text-muted-foreground/70 group-hover:text-red-400 transition-colors" />
-          {!isCollapsed && <span>Logout</span>}
+          <LogOut className="w-[18px] h-[18px] shrink-0 text-slate-400 group-hover:text-rose-400 transition-colors" />
+          {!isCollapsed && <span className="font-sans">Sign Out</span>}
         </button>
       </div>
     </div>
@@ -157,11 +175,10 @@ export function Sidebar() {
       <aside
         className={cn(
           "hidden md:flex flex-col fixed top-0 left-0 h-screen z-40",
-          "backdrop-blur-2xl border-r border-border",
+          "border-r border-white/[0.06] shadow-xl shadow-black/50",
           "transition-all duration-300 ease-in-out",
           isCollapsed ? "w-[68px]" : "w-[256px]"
         )}
-        style={{ background: "var(--sidebar-bg)" }}
         aria-label="Main sidebar"
       >
         <SidebarContent />
@@ -177,29 +194,27 @@ export function Sidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 backdrop-blur-sm md:hidden"
-              style={{ background: "var(--overlay-bg)" }}
+              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm md:hidden"
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
 
-            {/* Drawer */}
+            {/* Mobile Drawer */}
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 h-screen w-[280px] z-50 md:hidden backdrop-blur-2xl border-r border-border shadow-2xl shadow-black/40"
-              style={{ background: "var(--sidebar-bg-mobile)" }}
+              className="fixed top-0 left-0 h-screen w-[280px] z-50 md:hidden border-r border-white/[0.08] shadow-2xl shadow-black/80"
               aria-label="Mobile navigation"
             >
               {/* Close button */}
               <button
                 onClick={() => setMobileOpen(false)}
-                className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40 z-10"
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50 z-10"
                 aria-label="Close navigation menu"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-[#00F0FF]" />
               </button>
 
               <SidebarContent onNavigate={() => setMobileOpen(false)} />

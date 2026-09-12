@@ -11,12 +11,12 @@ interface StrengthResult {
   score: number;
   label: string;
   color: string;
-  bgColor: string;
+  barColor: string;
 }
 
 function calculateStrength(password: string): StrengthResult {
   if (!password) {
-    return { score: 0, label: "", color: "", bgColor: "" };
+    return { score: 0, label: "", color: "", barColor: "" };
   }
 
   let score = 0;
@@ -37,7 +37,7 @@ function calculateStrength(password: string): StrengthResult {
       score: 1,
       label: "Weak",
       color: "text-red-400",
-      bgColor: "bg-red-500",
+      barColor: "bg-red-500",
     };
   }
   if (score <= 3) {
@@ -45,22 +45,22 @@ function calculateStrength(password: string): StrengthResult {
       score: 2,
       label: "Fair",
       color: "text-amber-400",
-      bgColor: "bg-amber-500",
+      barColor: "bg-amber-500",
     };
   }
   if (score <= 4) {
     return {
       score: 3,
       label: "Good",
-      color: "text-blue-400",
-      bgColor: "bg-blue-500",
+      color: "text-sky-400",
+      barColor: "bg-sky-500",
     };
   }
   return {
     score: 4,
     label: "Strong",
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-500",
+    color: "text-[#00F0FF]",
+    barColor: "bg-[#00F0FF]",
   };
 }
 
@@ -77,17 +77,17 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
           <div
             key={level}
             className={cn(
-              "h-1.5 flex-1 rounded-full transition-all duration-300",
+              "h-1 flex-1 rounded-full transition-all duration-300",
               level <= strength.score
-                ? strength.bgColor
-                : "bg-slate-800"
+                ? strength.barColor
+                : "bg-white/[0.06]"
             )}
           />
         ))}
       </div>
 
       {/* Strength Label */}
-      <p className={cn("text-xs font-medium transition-colors", strength.color)}>
+      <p className={cn("text-xs font-semibold font-heading tracking-wide transition-colors", strength.color)}>
         {strength.label}
       </p>
     </div>

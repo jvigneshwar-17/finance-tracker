@@ -17,9 +17,6 @@ export default async function DashboardLayout({
 }) {
   const auth = await requireVerifiedAuth();
   if (!auth.success) {
-    if (auth.status === 403) {
-      redirect("/verify-email");
-    }
     redirect("/login");
   }
 

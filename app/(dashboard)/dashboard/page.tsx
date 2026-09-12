@@ -9,6 +9,8 @@ import {
   PiggyBank,
   Target,
   Plus,
+  ShieldCheck,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTransactions } from "@/hooks/use-transactions";
@@ -74,8 +76,8 @@ export default function DashboardPage() {
     return (
       <div className="space-y-6">
         <div className="space-y-2 animate-pulse">
-          <div className="w-64 h-8 rounded-lg" style={{ background: "var(--skeleton)" }} />
-          <div className="w-48 h-4 rounded" style={{ background: "var(--skeleton-soft)" }} />
+          <div className="w-64 h-8 rounded-xl bg-white/[0.06]" />
+          <div className="w-48 h-4 rounded bg-white/[0.04]" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -83,8 +85,8 @@ export default function DashboardPage() {
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="h-[320px] rounded-2xl border border-border animate-pulse" style={{ background: "var(--surface)" }} />
-          <div className="h-[320px] rounded-2xl border border-border animate-pulse" style={{ background: "var(--surface)" }} />
+          <div className="h-[320px] rounded-2xl border border-white/[0.06] glass-fintech animate-pulse" />
+          <div className="h-[320px] rounded-2xl border border-white/[0.06] glass-fintech animate-pulse" />
         </div>
       </div>
     );
@@ -92,7 +94,7 @@ export default function DashboardPage() {
 
   const firstName = user?.name?.split(" ")[0] || "there";
 
-  // Format stat card amounts from live data
+  // Format stat card amounts strictly from existing live data
   const balance = statsLoading ? "—" : formatAmount(stats.balance);
   const monthlyIncome = statsLoading ? "—" : formatAmount(stats.monthlyIncome);
   const monthlyExpense = statsLoading ? "—" : formatAmount(stats.monthlyExpense);
@@ -104,31 +106,43 @@ export default function DashboardPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="space-y-6 max-w-[1400px]"
+        className="space-y-8 max-w-[1440px] mx-auto"
       >
-        {/* Welcome Header */}
+        {/* Welcome Header & Quick Add CTA */}
         <motion.div
           variants={item}
-          className="flex items-start justify-between gap-4 flex-wrap"
+          className="flex items-start justify-between gap-4 flex-wrap pb-2 border-b border-white/[0.04]"
         >
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {getGreeting()}, {firstName}! 👋
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/25 font-heading">
+                <ShieldCheck className="w-3 h-3" />
+                <span>ACTIVE SESSION</span>
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-heading">
+              {getGreeting()}, <span className="gradient-text">{firstName}</span>!
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">{formatDate()}</p>
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-telemetry">
+              <Calendar className="w-3.5 h-3.5 text-slate-500" />
+              <span>{formatDate()}</span>
+            </div>
           </div>
-          <Button
-            onClick={() => handleOpenAdd("expense")}
-            size="sm"
-            className="shrink-0"
-            aria-label="Add transaction"
-          >
-            <Plus className="w-4 h-4" />
-            Add Transaction
-          </Button>
+
+          <div className="flex items-center gap-3 pt-2">
+            <Button
+              onClick={() => handleOpenAdd("expense")}
+              size="sm"
+              className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold font-heading bg-[#00F0FF] text-[#07090E] hover:bg-[#3bf4ff] active:scale-[0.98] transition-all shadow-md shadow-[#00F0FF]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]"
+              aria-label="Add transaction"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>Add Transaction</span>
+            </Button>
+          </div>
         </motion.div>
 
-        {/* Stat Cards */}
+        {/* Primary Cash Flow Stat Cards */}
         <motion.div
           variants={item}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"
@@ -138,54 +152,56 @@ export default function DashboardPage() {
             title="Net Balance"
             amount={balance}
             trend={{ value: "All time", direction: "up", label: "income − expense" }}
-            iconColor="text-emerald-400"
-            iconBg="bg-emerald-500/10 border-emerald-500/20"
+            iconColor="text-[#00F0FF]"
+            iconBg="bg-[#00F0FF]/10 border-[#00F0FF]/25"
+            highlight={true}
           />
           <StatCard
             icon={TrendingUp}
             title="Monthly Income"
             amount={monthlyIncome}
-            trend={{ value: "This month", direction: "up", label: "total income" }}
-            iconColor="text-teal-400"
-            iconBg="bg-teal-500/10 border-teal-500/20"
+            trend={{ value: "This month", direction: "up", label: "total credited" }}
+            iconColor="text-emerald-400"
+            iconBg="bg-emerald-500/10 border-emerald-500/20"
           />
           <StatCard
             icon={TrendingDown}
             title="Monthly Expenses"
             amount={monthlyExpense}
-            trend={{ value: "This month", direction: "down", label: "total expenses" }}
-            iconColor="text-red-400"
-            iconBg="bg-red-500/10 border-red-500/20"
+            trend={{ value: "This month", direction: "down", label: "total debited" }}
+            iconColor="text-rose-400"
+            iconBg="bg-rose-500/10 border-rose-500/20"
           />
           <StatCard
             icon={PiggyBank}
             title="Monthly Savings"
             amount={monthlySavings}
-            trend={{ value: "This month", direction: "up", label: "income − expenses" }}
-            iconColor="text-[#06b6d4]"
+            trend={{ value: "This month", direction: "up", label: "net cash retained" }}
+            iconColor="text-cyan-400"
             iconBg="bg-cyan-500/10 border-cyan-500/20"
           />
           <StatCard
             icon={Target}
             title="Total Expenses"
             amount={statsLoading ? "—" : formatAmount(stats.totalExpense)}
-            trend={{ value: "All time", direction: "down", label: "total spent" }}
-            iconColor="text-purple-400"
-            iconBg="bg-purple-500/10 border-purple-500/20"
+            trend={{ value: "All time", direction: "down", label: "cumulative spending" }}
+            iconColor="text-violet-400"
+            iconBg="bg-violet-500/10 border-violet-500/20"
           />
         </motion.div>
 
-        {/* Analytics Charts */}
-        <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Analytics Charts Row 1: Monthly Spending + Expense Categories */}
+        <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <SpendingLineChart />
           <CategoryPieChart />
         </motion.div>
 
+        {/* Analytics Charts Row 2: Income vs Expenses Full Width */}
         <motion.div variants={item}>
           <IncomeExpenseBarChart />
         </motion.div>
 
-        {/* Recent Transactions — Live Data */}
+        {/* Recent Transactions Section */}
         <motion.div variants={item}>
           <RecentTransactions
             transactions={recent}
@@ -194,7 +210,7 @@ export default function DashboardPage() {
           />
         </motion.div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions Shortcuts */}
         <motion.div variants={item}>
           <QuickActions
             onAddIncome={() => handleOpenAdd("income")}
@@ -203,7 +219,7 @@ export default function DashboardPage() {
         </motion.div>
       </motion.div>
 
-      {/* Add Transaction Dialog */}
+      {/* Add Transaction Dialog (Kept strictly intact) */}
       <AddTransactionDialog
         open={addOpen}
         defaultType={addType}

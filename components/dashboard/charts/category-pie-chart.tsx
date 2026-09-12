@@ -26,16 +26,17 @@ function CustomTooltip({
     const entry = payload[0];
     const percent = total > 0 ? ((entry.value / total) * 100).toFixed(1) : "0";
     return (
-      <div className="border border-border rounded-xl px-3 py-2 shadow-xl backdrop-blur-xl" style={{ background: "var(--tooltip-bg)" }}>
+      <div className="glass-fintech border border-white/[0.12] rounded-xl px-3.5 py-2.5 shadow-2xl shadow-black/80 backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <div
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: entry.payload.color }}
           />
-          <p className="text-[11px] text-foreground/70 font-medium">{entry.name}</p>
+          <p className="text-[11px] text-slate-300 font-medium font-heading">{entry.name}</p>
         </div>
-        <p className="text-sm font-bold text-foreground mt-0.5">
-          ₹{entry.value.toLocaleString("en-IN")} ({percent}%)
+        <p className="text-sm font-bold text-white font-telemetry tnum mt-0.5">
+          ₹{entry.value.toLocaleString("en-IN")}{" "}
+          <span className="text-[#00F0FF] text-xs font-normal">({percent}%)</span>
         </p>
       </div>
     );
@@ -51,19 +52,22 @@ export function CategoryPieChart({ data: propData }: { data?: CategoryPiePoint[]
   const hasData = total > 0;
 
   return (
-    <div className="p-5 rounded-2xl border border-border backdrop-blur-xl flex flex-col justify-between" style={{ background: "var(--surface)" }}>
+    <div className="p-5 sm:p-6 rounded-2xl glass-fintech border border-white/[0.08] flex flex-col justify-between relative overflow-hidden">
+      {/* Top subtle glare */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#7928CA]/30 to-transparent" />
+
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Expense Categories</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Category breakdown</p>
+            <h3 className="text-sm font-bold text-white font-heading tracking-wide">Expense Categories</h3>
+            <p className="text-xs text-slate-400 mt-0.5">Category distribution</p>
           </div>
         </div>
 
         <div className="h-[200px] relative">
           {statsLoading ? (
             <div className="w-full h-full flex items-center justify-center">
-              <div className="w-32 h-32 rounded-full animate-pulse" style={{ background: "var(--skeleton)" }} />
+              <div className="w-32 h-32 rounded-full animate-pulse bg-white/[0.04]" />
             </div>
           ) : !hasData ? (
             <EmptyState
@@ -96,8 +100,8 @@ export function CategoryPieChart({ data: propData }: { data?: CategoryPiePoint[]
 
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
-                  <p className="text-[10px] text-muted-foreground font-medium">Total</p>
-                  <p className="text-lg font-bold text-foreground">
+                  <p className="text-[10px] text-slate-400 font-medium uppercase font-heading tracking-wider">Total</p>
+                  <p className="text-base sm:text-lg font-bold text-white font-telemetry tnum">
                     ₹{total >= 1000 ? `${(total / 1000).toFixed(1)}k` : total.toLocaleString("en-IN")}
                   </p>
                 </div>
@@ -108,15 +112,15 @@ export function CategoryPieChart({ data: propData }: { data?: CategoryPiePoint[]
       </div>
 
       {hasData && (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 pt-3 border-t border-white/[0.06]">
           {data.slice(0, 6).map((item) => (
             <div key={item.name} className="flex items-center gap-2">
               <div
-                className="w-2.5 h-2.5 rounded-full shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-[11px] text-muted-foreground truncate">{item.name}</span>
-              <span className="text-[11px] text-muted-foreground/70 font-medium ml-auto">
+              <span className="text-[11px] text-slate-300 truncate font-sans">{item.name}</span>
+              <span className="text-[11px] text-slate-400 font-telemetry tnum ml-auto">
                 {total > 0 ? ((item.value / total) * 100).toFixed(0) : "0"}%
               </span>
             </div>

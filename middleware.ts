@@ -7,8 +7,6 @@ const COOKIE_NAME = "auth-token";
 // Routes that require authentication
 const protectedRoutes = [
   "/dashboard",
-  "/profile",
-  "/settings",
   "/transactions",
   "/budgets",
 ];

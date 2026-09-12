@@ -6,12 +6,12 @@ import { TrendingUp, Menu, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Budgets", href: "#budgets" },
-  { label: "Analytics", href: "#analytics" },
-  { label: "Goals", href: "#goals" },
-  { label: "Security", href: "#security" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Features", href: "/#features" },
+  { label: "Budgets", href: "/#budgets" },
+  { label: "Analytics", href: "/#analytics" },
+  { label: "Goals", href: "/#goals" },
+  { label: "Security", href: "/#security" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export function Navbar() {
@@ -58,13 +58,13 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -104,14 +104,14 @@ export function Navbar() {
         <div className="md:hidden border-t border-white/[0.08] bg-[#07090E]/95 backdrop-blur-2xl px-4 pt-4 pb-6 mt-3 shadow-2xl animate-in fade-in duration-200">
           <nav className="flex flex-col gap-1 mb-5" aria-label="Mobile Navigation">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-4 py-2.5 rounded-xl text-base font-medium text-slate-200 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
           <div className="pt-4 border-t border-white/[0.08] flex flex-col gap-2.5">

@@ -3,11 +3,10 @@
 import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, XCircle, Loader2, Mail } from "lucide-react";
-import { motion } from "framer-motion";
+import { CheckCircle2, XCircle, Mail, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { AuthCard } from "@/components/auth/auth-card";
-import { Button } from "@/components/ui/button";
 
 type VerifyState = "loading" | "success" | "error" | "no-token";
 
@@ -49,84 +48,142 @@ function VerifyEmailContent() {
     verifyEmail();
   }, [token]);
 
+  const stateConfig: Record<VerifyState, {
+    title: string;
+    subtitle: string;
+    icon: React.ReactNode;
+    iconBg: string;
+    iconBorder: string;
+  }> = {
+    loading: {
+      title: "Verifying your email...",
+      subtitle: "Please wait while we confirm your email address",
+      iconBg: "rgba(0,240,255,0.06)",
+      iconBorder: "rgba(0,240,255,0.15)",
+      icon: (
+        <span
+          className="w-9 h-9 rounded-full border-2 animate-spin"
+          style={{ borderColor: "rgba(0,240,255,0.2)", borderTopColor: "#00F0FF" }}
+        />
+      ),
+    },
+    success: {
+      title: "Email verified!",
+      subtitle: "Your email has been successfully confirmed",
+      iconBg: "rgba(0,240,255,0.08)",
+      iconBorder: "rgba(0,240,255,0.22)",
+      icon: <CheckCircle2 className="w-9 h-9" style={{ color: "#00F0FF" }} />,
+    },
+    error: {
+      title: "Verification failed",
+      subtitle: "We couldn't verify your email address",
+      iconBg: "rgba(239,68,68,0.08)",
+      iconBorder: "rgba(239,68,68,0.20)",
+      icon: <XCircle className="w-9 h-9 text-red-400" />,
+    },
+    "no-token": {
+      title: "Check your email",
+      subtitle: "Click the verification link sent to your inbox to activate your account",
+      iconBg: "rgba(0,240,255,0.06)",
+      iconBorder: "rgba(0,240,255,0.15)",
+      icon: <Mail className="w-9 h-9" style={{ color: "#00F0FF" }} />,
+    },
+  };
+
+  const config = stateConfig[state];
+
   return (
     <AuthCard
-      title={
-        state === "loading"
-          ? "Verifying your email..."
-          : state === "success"
-          ? "Email verified!"
-          : state === "no-token"
-          ? "Check your email"
-          : "Verification failed"
-      }
-      subtitle={
-        state === "loading"
-          ? "Please wait while we verify your email address"
-          : state === "success"
-          ? "Your email has been successfully verified"
-          : state === "no-token"
-          ? "Please click the verification link sent to your inbox to activate your account."
-          : "We couldn't verify your email address"
-      }
+      title={config.title}
+      subtitle={config.subtitle}
       footer={
         <Link
           href="/login"
-          className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+          className="inline-flex items-center gap-1.5 font-medium transition-colors"
+          style={{ color: "#00F0FF" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#3bf4ff")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#00F0FF")}
         >
-          Go to login
+          Go to login <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       }
     >
-      <div className="flex flex-col items-center py-6 space-y-4">
-        {state === "loading" && (
+      <div className="flex flex-col items-center py-4 space-y-5">
+        {/* State icon */}
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center"
+            key={state}
+            initial={{ opacity: 0, scale: 0.85, y: 6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative"
           >
-            <Loader2 className="w-7 h-7 text-emerald-400 animate-spin" />
+            {/* Ambient pulse for loading/success */}
+            {(state === "loading" || state === "success" || state === "no-token") && (
+              <div
+                className="absolute inset-0 rounded-2xl animate-ping"
+                style={{ background: "rgba(0,240,255,0.04)", animationDuration: "2.5s" }}
+              />
+            )}
+            <div
+              className="relative w-20 h-20 rounded-2xl flex items-center justify-center"
+              style={{ background: config.iconBg, border: `1px solid ${config.iconBorder}` }}
+            >
+              {config.icon}
+            </div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* Message */}
+        {message && (
+          <p className="text-sm text-slate-400 text-center max-w-xs leading-relaxed">
+            {message}
+          </p>
         )}
 
+        {/* CTA on success */}
         {state === "success" && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-bold font-heading transition-all duration-200 active:scale-[0.98] focus:outline-none"
+              style={{
+                background: "linear-gradient(135deg, #00F0FF 0%, #3bf4ff 50%, #00b8c9 100%)",
+                color: "#07090E",
+                boxShadow: "0 0 25px rgba(0,240,255,0.3)",
+              }}
+            >
+              Go to Dashboard
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+            </Link>
           </motion.div>
         )}
 
-        {state === "no-token" && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
-          >
-            <Mail className="w-7 h-7 text-emerald-400" />
-          </motion.div>
-        )}
-
+        {/* Error CTA */}
         {state === "error" && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="flex flex-col items-center gap-2"
           >
-            <XCircle className="w-7 h-7 text-red-400" />
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-bold font-heading transition-all duration-200 active:scale-[0.98] focus:outline-none"
+              style={{
+                background: "rgba(239,68,68,0.10)",
+                color: "#f87171",
+                border: "1px solid rgba(239,68,68,0.20)",
+              }}
+            >
+              Return to Login
+            </Link>
           </motion.div>
-        )}
-
-        {message && (
-          <p className="text-sm text-slate-400 text-center">{message}</p>
-        )}
-
-        {state === "success" && (
-          <Link href="/login">
-            <Button size="default">Continue to login</Button>
-          </Link>
         )}
       </div>
     </AuthCard>
@@ -137,13 +194,12 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <AuthCard
-          title="Loading..."
-          subtitle="Please wait"
-          footer={null}
-        >
+        <AuthCard title="Loading..." subtitle="Please wait" footer={null}>
           <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <span
+              className="w-8 h-8 rounded-full border-2 animate-spin"
+              style={{ borderColor: "rgba(0,240,255,0.2)", borderTopColor: "#00F0FF" }}
+            />
           </div>
         </AuthCard>
       }

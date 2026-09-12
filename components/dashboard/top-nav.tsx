@@ -15,6 +15,7 @@ import {
   LogOut,
   LayoutDashboard,
   CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar";
@@ -82,12 +83,13 @@ export function TopNav() {
 
   const currentPage = breadcrumbMap[pathname] || "Dashboard";
 
-  const userInitials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) || "?";
+  const userInitials =
+    user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "?";
 
   // Fetch user budgets to compute actual category budget usage
   useEffect(() => {
@@ -124,7 +126,7 @@ export function TopNav() {
       if (pct >= 100) {
         list.push({
           id: `budget-over-${b.id}`,
-          title: "Over budget",
+          title: "Over budget limit",
           desc: `${b.category} is at ${pct.toFixed(0)}% (${formatAmount(spent)} of ${formatAmount(b.amount)})`,
           time: "This month",
           unread: true,
@@ -133,7 +135,7 @@ export function TopNav() {
       } else if (pct >= 80) {
         list.push({
           id: `budget-warn-${b.id}`,
-          title: "Budget alert",
+          title: "Budget threshold warning",
           desc: `${b.category} budget is at ${pct.toFixed(0)}% (${formatAmount(spent)} of ${formatAmount(b.amount)})`,
           time: "This month",
           unread: true,
@@ -148,7 +150,7 @@ export function TopNav() {
       if (tx.type === "income") {
         list.push({
           id: `tx-${tx.id}`,
-          title: "New income recorded",
+          title: "Income recorded",
           desc: `${tx.title} — credited ${formatAmount(tx.amount)}`,
           time: formatRelativeTime(tx.date || tx.createdAt),
           unread: false,
@@ -157,7 +159,7 @@ export function TopNav() {
       } else {
         list.push({
           id: `tx-${tx.id}`,
-          title: "Recent expense",
+          title: "Expense recorded",
           desc: `${tx.title} — ${formatAmount(tx.amount)} (${tx.category})`,
           time: formatRelativeTime(tx.date || tx.createdAt),
           unread: false,
@@ -211,123 +213,128 @@ export function TopNav() {
   }
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-30 w-full",
-        "glass-nav py-3 px-4 sm:px-6"
-      )}
-    >
+    <header className="sticky top-0 z-30 w-full bg-[#07090E]/85 backdrop-blur-2xl border-b border-white/[0.06] py-3 px-4 sm:px-6">
       <div className="flex items-center justify-between gap-4">
-        {/* Left Section: Hamburger + Breadcrumb */}
+        {/* Left Section: Mobile Hamburger + Breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(true)}
-            className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
             aria-label="Open navigation menu"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5 text-[#00F0FF]" />
           </button>
 
-          {/* Breadcrumb */}
-          <nav className="hidden sm:flex items-center gap-1.5 text-sm" aria-label="Breadcrumb">
+          {/* Breadcrumb Navigation */}
+          <nav className="hidden sm:flex items-center gap-2 text-xs" aria-label="Breadcrumb">
             <Link
               href="/dashboard"
-              className="text-muted-foreground hover:text-foreground/70 transition-colors flex items-center gap-1"
+              className="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#00F0FF] rounded px-1"
             >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>Home</span>
+              <LayoutDashboard className="w-3.5 h-3.5 text-[#00F0FF]" />
+              <span className="font-heading font-medium">Dashboard</span>
             </Link>
             {currentPage !== "Dashboard" && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
-                <span className="text-foreground/80 font-medium">{currentPage}</span>
+                <ChevronRight className="w-3 h-3 text-slate-600" />
+                <span className="text-white font-heading font-semibold px-1">
+                  {currentPage}
+                </span>
               </>
             )}
           </nav>
 
           {/* Mobile page title */}
-          <h1 className="sm:hidden text-base font-semibold text-foreground truncate">{currentPage}</h1>
+          <h1 className="sm:hidden text-sm font-heading font-bold text-white truncate">
+            {currentPage}
+          </h1>
         </div>
 
-        {/* Center: Search Bar */}
+        {/* Center: Search Bar (styled with landing glass tokens) */}
         <div className="hidden lg:flex flex-1 max-w-md mx-4">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Search transactions, budgets..."
+              placeholder="Search transactions, categories, budgets..."
               className={cn(
-                "w-full pl-10 pr-4 py-2 rounded-xl text-sm",
-                "bg-secondary/60 border border-border text-foreground",
-                "placeholder:text-muted-foreground",
-                "focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30",
+                "w-full pl-9 pr-10 py-2 rounded-xl text-xs sm:text-sm",
+                "bg-white/[0.03] border border-white/[0.08] text-white",
+                "placeholder:text-slate-500",
+                "focus:outline-none focus:border-[#00F0FF]/50 focus:ring-1 focus:ring-[#00F0FF]/40",
                 "transition-all duration-200"
               )}
               aria-label="Search"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground bg-secondary border border-border rounded">
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded">
               ⌘K
             </kbd>
           </div>
         </div>
 
-        {/* Right Section: Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mobile search */}
+        {/* Right Section: Actions & Profile */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Mobile search trigger */}
           <button
-            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
             aria-label="Search"
           >
-            <Search className="w-[18px] h-[18px]" />
+            <Search className="w-4 h-4" />
           </button>
 
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#00F0FF]" />}
           </button>
 
-          {/* Notifications */}
+          {/* Notifications Dropdown */}
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => {
                 setIsNotifOpen(!isNotifOpen);
                 setIsProfileOpen(false);
               }}
-              className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className="relative p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
               aria-label="Notifications"
               aria-expanded={isNotifOpen}
               aria-haspopup="true"
             >
-              <Bell className="w-[18px] h-[18px]" />
-              {/* Unread dot - only if there are unread notifications */}
+              <Bell className="w-4 h-4" />
+              {/* Unread indicator */}
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-background" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00F0FF] rounded-full ring-2 ring-[#07090E] animate-pulse" />
               )}
             </button>
 
-            {/* Notifications dropdown */}
+            {/* Notifications Menu */}
             {isNotifOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border backdrop-blur-2xl shadow-2xl shadow-black/40 p-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50" style={{ background: "var(--dropdown-bg)" }} role="menu">
-                <div className="px-4 py-3 border-b border-border">
-                  <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+              <div
+                className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/[0.08] glass-fintech shadow-2xl shadow-black/80 p-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50 overflow-hidden"
+                role="menu"
+              >
+                <div className="px-4 py-3 border-b border-white/[0.06]">
+                  <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider">
+                    Notifications
+                  </h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
                     {unreadCount > 0
-                      ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? "s" : ""}`
+                      ? `${unreadCount} unread alert${unreadCount !== 1 ? "s" : ""}`
                       : notifications.length > 0
-                      ? "Recent activity & alerts"
+                      ? "Recent activity & budget alerts"
                       : "No new notifications"}
                   </p>
                 </div>
+
                 {notifications.length === 0 ? (
                   <div className="py-8 px-4 text-center">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2 opacity-80" />
-                    <p className="text-xs font-semibold text-foreground">You&apos;re all caught up</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">No new notifications</p>
+                    <CheckCircle2 className="w-7 h-7 text-[#00F0FF] mx-auto mb-2 opacity-80" />
+                    <p className="text-xs font-semibold text-white font-heading">You&apos;re all caught up</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">No recent alerts or warnings</p>
                   </div>
                 ) : (
                   <div className="py-1 max-h-64 overflow-y-auto sidebar-scrollbar">
@@ -337,104 +344,110 @@ export function TopNav() {
                         href={notif.link}
                         onClick={() => setIsNotifOpen(false)}
                         className={cn(
-                          "block px-4 py-3 hover:bg-secondary/60 transition-colors cursor-pointer rounded-xl mx-1",
-                          notif.unread && "bg-emerald-500/[0.03]"
+                          "block px-3.5 py-2.5 hover:bg-white/[0.05] transition-colors rounded-xl mx-1",
+                          notif.unread && "bg-[#00F0FF]/[0.04] border border-[#00F0FF]/15"
                         )}
                         role="menuitem"
                       >
-                        <div className="flex items-start gap-3">
-                          {notif.unread && (
-                            <div className="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                        <div className="flex items-start gap-2.5">
+                          {notif.unread ? (
+                            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                          ) : (
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-1.5 shrink-0" />
                           )}
-                          <div className={cn(!notif.unread && "ml-5")}>
-                            <p className="text-xs font-semibold text-foreground">{notif.title}</p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">{notif.desc}</p>
-                            <p className="text-[10px] text-muted-foreground/70 mt-1">{notif.time}</p>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-white font-heading">{notif.title}</p>
+                            <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">{notif.desc}</p>
+                            <p className="text-[10px] text-slate-500 font-telemetry mt-1">{notif.time}</p>
                           </div>
                         </div>
                       </Link>
                     ))}
                   </div>
                 )}
-                <div className="px-4 py-2 border-t border-border">
+
+                <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.02]">
                   <Link
                     href="/dashboard/transactions"
                     onClick={() => setIsNotifOpen(false)}
-                    className="block w-full text-center text-xs text-emerald-400 hover:text-emerald-300 font-medium py-1 transition-colors"
+                    className="block w-full text-center text-xs text-[#00F0FF] hover:underline font-medium py-1 transition-colors"
                   >
-                    View all activity
+                    View all transactions &rarr;
                   </Link>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-6 bg-border mx-1" />
+          {/* Subtle Divider */}
+          <div className="hidden sm:block w-px h-5 bg-white/[0.08] mx-0.5" />
 
-          {/* Profile dropdown */}
+          {/* User Profile Area & Dropdown */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => {
                 setIsProfileOpen(!isProfileOpen);
                 setIsNotifOpen(false);
               }}
-              className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-secondary/60 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0FF]/50"
               aria-label="User menu"
               aria-expanded={isProfileOpen}
               aria-haspopup="true"
             >
-              <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-400 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00F0FF]/20 via-[#7928CA]/20 to-transparent border border-[#00F0FF]/40 flex items-center justify-center text-xs font-bold text-[#00F0FF] shrink-0 font-heading">
                 {userInitials}
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-xs font-medium text-foreground leading-tight truncate max-w-[120px]">
-                  {user?.name || "Loading..."}
+                <p className="text-xs font-semibold text-white leading-tight truncate max-w-[120px] font-heading">
+                  {user?.name || "ExpenseFlow User"}
                 </p>
-                <p className="text-[10px] text-muted-foreground leading-tight truncate max-w-[120px]">
+                <p className="text-[10px] text-slate-400 font-telemetry leading-tight truncate max-w-[120px]">
                   {user?.email || ""}
                 </p>
               </div>
             </button>
 
-            {/* Profile dropdown menu */}
+            {/* Profile Dropdown Menu */}
             {isProfileOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border backdrop-blur-2xl shadow-2xl shadow-black/40 p-1 animate-in fade-in slide-in-from-top-2 duration-200" style={{ background: "var(--dropdown-bg)" }} role="menu">
-                {/* User info header */}
-                <div className="px-4 py-3 border-b border-border">
-                  <p className="text-sm font-semibold text-foreground truncate">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
+              <div
+                className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-white/[0.08] glass-fintech shadow-2xl shadow-black/80 p-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
+                role="menu"
+              >
+                {/* Header info */}
+                <div className="px-4 py-3 border-b border-white/[0.06]">
+                  <p className="text-xs font-bold text-white font-heading truncate">{user?.name}</p>
+                  <p className="text-[11px] text-slate-400 font-telemetry truncate mt-0.5">{user?.email}</p>
                 </div>
 
                 <div className="py-1">
                   <Link
                     href="/dashboard"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors rounded-xl mx-1"
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors rounded-xl mx-1"
                     role="menuitem"
                   >
-                    <User className="w-4 h-4 text-muted-foreground/70" />
-                    <span>Profile</span>
+                    <User className="w-3.5 h-3.5 text-[#00F0FF]" />
+                    <span>Dashboard Home</span>
                   </Link>
                   <Link
                     href="/dashboard/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors rounded-xl mx-1"
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors rounded-xl mx-1"
                     role="menuitem"
                   >
-                    <Settings className="w-4 h-4 text-muted-foreground/70" />
-                    <span>Settings</span>
+                    <Settings className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Account Settings</span>
                   </Link>
                 </div>
 
-                <div className="border-t border-border pt-1">
+                <div className="border-t border-white/[0.06] pt-1">
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors rounded-xl mx-1"
+                    className="flex items-center gap-2.5 w-full px-3.5 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors rounded-xl mx-1 text-left"
                     role="menuitem"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
                   </button>
                 </div>
               </div>

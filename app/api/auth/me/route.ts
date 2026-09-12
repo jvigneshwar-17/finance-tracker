@@ -35,16 +35,6 @@ export async function GET() {
       );
     }
 
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        {
-          error: "Email verification required",
-          code: "EMAIL_VERIFICATION_REQUIRED",
-        },
-        { status: 403 }
-      );
-    }
-
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     console.error("[ME_ERROR]", error);

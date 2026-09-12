@@ -111,39 +111,43 @@ function calcStats(transactions: Transaction[]): TransactionStats {
   }
 
   return {
-    totalIncome,
-    totalExpense,
-    balance: totalIncome - totalExpense,
-    monthlyIncome,
-    monthlyExpense,
-    monthlySavings: monthlyIncome - monthlyExpense,
+    totalIncome: Math.round(totalIncome * 100) / 100,
+    totalExpense: Math.round(totalExpense * 100) / 100,
+    balance: Math.round((totalIncome - totalExpense) * 100) / 100,
+    monthlyIncome: Math.round(monthlyIncome * 100) / 100,
+    monthlyExpense: Math.round(monthlyExpense * 100) / 100,
+    monthlySavings: Math.round((monthlyIncome - monthlyExpense) * 100) / 100,
   };
 }
 
 function calcSpendingTrend(transactions: Transaction[]): SpendingTrendPoint[] {
   const now = new Date();
-  const monthKeys: string[] = [];
+  const months: { label: string; year: number; month: number }[] = [];
   const spendingMap = new Map<string, number>();
 
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = d.toLocaleDateString("en-US", { month: "short" });
-    monthKeys.push(key);
-    spendingMap.set(key, 0);
+    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const compoundKey = `${d.getFullYear()}-${d.getMonth()}`;
+    months.push({ label, year: d.getFullYear(), month: d.getMonth() });
+    spendingMap.set(compoundKey, 0);
   }
 
   for (const tx of transactions) {
     if (tx.type !== "expense") continue;
     const d = new Date(tx.date);
-    const key = d.toLocaleDateString("en-US", { month: "short" });
-    if (spendingMap.has(key)) {
-      spendingMap.set(key, (spendingMap.get(key) || 0) + Number(tx.amount));
+    const compoundKey = `${d.getFullYear()}-${d.getMonth()}`;
+    if (spendingMap.has(compoundKey)) {
+      spendingMap.set(
+        compoundKey,
+        Math.round(((spendingMap.get(compoundKey) || 0) + Number(tx.amount)) * 100) / 100
+      );
     }
   }
 
-  return monthKeys.map((key) => ({
-    month: key,
-    spending: spendingMap.get(key) || 0,
+  return months.map(({ label, year, month }) => ({
+    month: label,
+    spending: spendingMap.get(`${year}-${month}`) || 0,
   }));
 }
 
@@ -158,15 +162,10 @@ function calcCategoryPie(transactions: Transaction[]): CategoryPiePoint[] {
     if (tx.type !== "expense") continue;
     const txDate = new Date(tx.date);
     if (txDate.getFullYear() === currentYear && txDate.getMonth() === currentMonth) {
-      categoryMap.set(tx.category, (categoryMap.get(tx.category) || 0) + Number(tx.amount));
-    }
-  }
-
-  // Fallback to all-time expense categories if current month has no expenses
-  if (categoryMap.size === 0) {
-    for (const tx of transactions) {
-      if (tx.type !== "expense") continue;
-      categoryMap.set(tx.category, (categoryMap.get(tx.category) || 0) + Number(tx.amount));
+      categoryMap.set(
+        tx.category,
+        Math.round(((categoryMap.get(tx.category) || 0) + Number(tx.amount)) * 100) / 100
+      );
     }
   }
 
@@ -184,35 +183,42 @@ function calcCategoryPie(transactions: Transaction[]): CategoryPiePoint[] {
 
 function calcIncomeExpense(transactions: Transaction[]): IncomeExpenseBarPoint[] {
   const now = new Date();
-  const monthKeys: string[] = [];
+  const months: { label: string; year: number; month: number }[] = [];
   const incomeMap = new Map<string, number>();
   const expenseMap = new Map<string, number>();
 
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = d.toLocaleDateString("en-US", { month: "short" });
-    monthKeys.push(key);
-    incomeMap.set(key, 0);
-    expenseMap.set(key, 0);
+    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const compoundKey = `${d.getFullYear()}-${d.getMonth()}`;
+    months.push({ label, year: d.getFullYear(), month: d.getMonth() });
+    incomeMap.set(compoundKey, 0);
+    expenseMap.set(compoundKey, 0);
   }
 
   for (const tx of transactions) {
     const d = new Date(tx.date);
-    const key = d.toLocaleDateString("en-US", { month: "short" });
+    const compoundKey = `${d.getFullYear()}-${d.getMonth()}`;
     const amount = Number(tx.amount) || 0;
-    if (monthKeys.includes(key)) {
+    if (incomeMap.has(compoundKey)) {
       if (tx.type === "income") {
-        incomeMap.set(key, (incomeMap.get(key) || 0) + amount);
+        incomeMap.set(
+          compoundKey,
+          Math.round(((incomeMap.get(compoundKey) || 0) + amount) * 100) / 100
+        );
       } else {
-        expenseMap.set(key, (expenseMap.get(key) || 0) + amount);
+        expenseMap.set(
+          compoundKey,
+          Math.round(((expenseMap.get(compoundKey) || 0) + amount) * 100) / 100
+        );
       }
     }
   }
 
-  return monthKeys.map((key) => ({
-    month: key,
-    income: incomeMap.get(key) || 0,
-    expenses: expenseMap.get(key) || 0,
+  return months.map(({ label, year, month }) => ({
+    month: label,
+    income: incomeMap.get(`${year}-${month}`) || 0,
+    expenses: expenseMap.get(`${year}-${month}`) || 0,
   }));
 }
 

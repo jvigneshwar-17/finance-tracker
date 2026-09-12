@@ -12,7 +12,10 @@ export const createBudgetSchema = z.object({
   amount: z.coerce
     .number({ message: "Amount must be a number" })
     .positive("Amount must be greater than zero")
-    .max(100_000_000, "Amount is too large"),
+    .max(100_000_000, "Amount is too large")
+    .refine((val) => Math.abs(val * 100 - Math.round(val * 100)) < 1e-6, {
+      message: "Amount cannot have more than 2 decimal places",
+    }),
 });
 
 export type CreateBudgetInput = z.infer<typeof createBudgetSchema>;
@@ -23,7 +26,10 @@ export const updateBudgetSchema = z.object({
   amount: z.coerce
     .number({ message: "Amount must be a number" })
     .positive("Amount must be greater than zero")
-    .max(100_000_000, "Amount is too large"),
+    .max(100_000_000, "Amount is too large")
+    .refine((val) => Math.abs(val * 100 - Math.round(val * 100)) < 1e-6, {
+      message: "Amount cannot have more than 2 decimal places",
+    }),
 });
 
 export type UpdateBudgetInput = z.infer<typeof updateBudgetSchema>;

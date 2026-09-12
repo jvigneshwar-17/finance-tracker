@@ -43,6 +43,11 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
+      // Prevent timing-based user enumeration via dummy bcrypt hash verification
+      await verifyPassword(
+        password,
+        "$2b$12$QP0s6dg7JJgcUfnU5Ur0/OgoZ5dEddQwSJJyt6dynm7Usf3/pmx9i"
+      );
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
@@ -55,17 +60,6 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
-      );
-    }
-
-    // Check email verification status from database
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        {
-          error: "Please verify your email address before logging in.",
-          code: "EMAIL_VERIFICATION_REQUIRED",
-        },
-        { status: 403 }
       );
     }
 
