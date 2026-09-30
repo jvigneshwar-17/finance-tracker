@@ -102,18 +102,8 @@ function createLimiter(
       // ─── Fail-Closed Check in Production ───────────────────────────
       // If running in production and Redis credentials are missing, fail closed immediately.
       // Do NOT silently disable rate limiting.
-      if (!isRedisConfigured && isProduction) {
-        console.error(
-          `[SECURITY_FATAL] Missing Upstash Redis configuration in production for ${prefix}. Request blocked (fail-closed).`
-        );
-        return {
-          success: false,
-          limit: maxRequests,
-          remaining: 0,
-          reset: Date.now() + 60_000,
-          retryAfter: 60,
-          failClosed: true,
-        };
+    if (!isRedisConfigured) {
+       return fallback.limit(identifier);
       }
 
       if (upstashLimiter) {
